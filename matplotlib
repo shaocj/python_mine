@@ -1,1 +1,4 @@
 
+matplotlib.pyplot.legend:
+======
+在轴上放置一个图例。
