@@ -1,1 +1,16 @@
 
+plot方法的函数：
+参数	说明
+label	用于图例的标签
+ax	要在其上进行绘制的matplotlib subplot对象。如果没有设置，则使用当前matplotlib subplot
+style	将要传给matplotlib的风格字符串(for example: ‘ko–’)
+alpha	图表的填充不透明(0-1)
+kind	可以是’line’, ‘bar’, ‘barh’, ‘kde’
+logy	在Y轴上使用对数标尺
+use_index	将对象的索引用作刻度标签
+rot	旋转刻度标签(0-360)
+xticks	用作X轴刻度的值
+yticks	用作Y轴刻度的值
+xlim	X轴的界限
+ylim	Y轴的界限
+grid	显示轴网格线
