@@ -1,0 +1,76 @@
+饼图的生成
+=========
+matplotlib.pyplot.pie(x, explode=None, labels=None, colors=None, autopct=None, pctdistance=0.6, shadow=False, labeldistance=1.1, 
+startangle=None, radius=None, counterclock=True, wedgeprops=None, textprops=None, center=(0, 0), frame=False, rotatelabels=False,
+hold=None, data=None)
+x:代表每个模块大小，explode：代表模块偏移角度，labels模块名称，colors模块颜色，shadow模块影子，startangle如果不为none则从x轴逆时针这个角度开始，radius
+
+1、代码：
+import matplotlib.pyplot as plt
+
+# Pie chart, where the slices will be ordered and plotted counter-clockwise:
+labels = 'Frogs', 'Hogs', 'Dogs', 'Logs'
+sizes = [15, 30, 45, 10]
+explode = (0, 0.1, 0, 0)  # only "explode" the 2nd slice (i.e. 'Hogs')
+
+fig1, ax1 = plt.subplots()
+ax1.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%',
+        shadow=True, startangle=90)
+ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+plt.show()
+
+2、matplotlib.gridspec 是一个模块，用于指定图中子图的位置。
+============
+matplotlib.gridspec.GridSpec（nrows，ncols，left = None，bottom = None，right = None，top = None，wspace = None，hspace = None，
+width_ratios = None，height_ratios = None ）
+
+代码：
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+
+# Some data
+
+labels = 'Frogs', 'Hogs', 'Dogs', 'Logs'
+fracs = [15, 30, 45, 10]
+
+explode = (0, 0.05, 0, 0)
+
+# Make square figures and axes
+
+the_grid = GridSpec(2, 2)
+
+plt.subplot(the_grid[0, 0], aspect=1)
+
+plt.pie(fracs, labels=labels, autopct='%1.1f%%', shadow=True)
+
+plt.subplot(the_grid[0, 1], aspect=1)
+
+plt.pie(fracs, explode=explode, labels=labels, autopct='%.0f%%', shadow=True)
+
+plt.subplot(the_grid[1, 0], aspect=1)
+
+patches, texts, autotexts = plt.pie(fracs, labels=labels,
+                                    autopct='%.0f%%',
+                                    shadow=True, radius=0.5)
+
+# Make the labels on the small plot easier to read.
+for t in texts:
+    t.set_size('smaller')
+for t in autotexts:
+    t.set_size('x-small')
+autotexts[0].set_color('y')
+
+plt.subplot(the_grid[1, 1], aspect=1)
+
+# Turn off shadow for tiny plot with exploded slice.
+patches, texts, autotexts = plt.pie(fracs, explode=explode,
+                                    labels=labels, autopct='%.0f%%',
+                                    shadow=False, radius=0.5)
+for t in texts:
+    t.set_size('smaller')
+for t in autotexts:
+    t.set_size('x-small')
+autotexts[0].set_color('y')
+
+plt.show()
