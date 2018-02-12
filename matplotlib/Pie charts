@@ -3,9 +3,21 @@
 matplotlib.pyplot.pie(x, explode=None, labels=None, colors=None, autopct=None, pctdistance=0.6, shadow=False, labeldistance=1.1, 
 startangle=None, radius=None, counterclock=True, wedgeprops=None, textprops=None, center=(0, 0), frame=False, rotatelabels=False,
 hold=None, data=None)
-x:代表每个模块大小，explode：代表模块偏移角度，labels模块名称，colors模块颜色，shadow模块影子，startangle如果不为none则从x轴逆时针这个角度开始，radius
-
+x       (每一块)的比例，如果sum(x) > 1会使用sum(x)归一化
+labels  (每一块)饼图外侧显示的说明文字
+explode (每一块)离开中心距离
+startangle  起始绘制角度,默认图是从x轴正方向逆时针画起,如设定=90则从y轴正方向画起
+shadow  是否阴影
+labeldistance label绘制位置,相对于半径的比例, 如<1则绘制在饼图内侧
+autopct 控制饼图内百分比设置,可以使用format字符串或者format function
+        '%1.1f'指小数点前后位数(没有用空格补齐)
+pctdistance 类似于labeldistance,指定autopct的位置刻度
+radius  控制饼图半径
+返回值:
+如果没有设置autopct,返回(patches, texts)
+如果设置autopct,返回(patches, texts, autotexts)
 1、代码：
+==========
 import matplotlib.pyplot as plt
 
 # Pie chart, where the slices will be ordered and plotted counter-clockwise:
@@ -21,10 +33,41 @@ ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 plt.show()
 
 2、matplotlib.gridspec 是一个模块，用于指定图中子图的位置。
-============
+===========================================
 matplotlib.gridspec.GridSpec（nrows，ncols，left = None，bottom = None，right = None，top = None，wspace = None，hspace = None，
 width_ratios = None，height_ratios = None ）
 
+GridSpec
+指定子图将放置的网格的几何位置。 需要设置网格的行数和列数。 子图布局参数（例如，左，右等）可以选择性调整。
+
+SubplotSpec
+指定在给定GridSpec中的子图位置。
+
+subplot2grid
+一个辅助函数，类似于pyplot.subplot，但是使用基于 0 的索引，并可使子图跨越多个格子。
+
+ax = plt.subplot2grid((2,2),(0, 0))
+等价于：
+ax = plt.subplot(2,2,1)
+
+       nRow=2, nCol=2
+(0,0) +-------+-------+
+      |   1   |       |
+      +-------+-------+
+      |       |       |
+      +-------+-------+
+      
+ GridSpec和SubplotSpec
+
+你可以显式创建GridSpec并用它们创建子图。
+例如，
+ax = plt.subplot2grid((2,2),(0, 0))
+等价于：
+import matplotlib.gridspec as gridspec
+gs = gridspec.GridSpec(2, 2)
+ax = plt.subplot(gs[0, 0])     
+      
+    
 代码：
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -74,3 +117,8 @@ for t in autotexts:
 autotexts[0].set_color('y')
 
 plt.show()
+其中：for t in texts:
+    t.set_size('smaller')对应于labels及设置大小
+    for t in autotexts:
+    t.set_size('x-small')
+autotexts[0].set_color('y')对应于fracs及其颜色设置
