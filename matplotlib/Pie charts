@@ -15,7 +15,7 @@ pctdistance 类似于labeldistance,指定autopct的位置刻度
 radius  控制饼图半径
 返回值:
 如果没有设置autopct,返回(patches, texts)
-如果设置autopct,返回(patches, texts, autotexts)
+如果设置autopct,返回(patches, texts, autotexts)texts是饼外的label,autotexts是饼内的label
 1、代码：
 ==========
 import matplotlib.pyplot as plt
