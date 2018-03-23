@@ -1,0 +1,19 @@
+#bar(left, height, width, color, align, yerr)函数：绘制柱形图。left为x轴的位置序列，一般采用arange函数产生一个序列；height为y轴的数值序列，也就是
+柱形图的高度，一般就是我们需要展示的数据；width为柱形图的宽度，一般这是为1即可；color为柱形图填充的颜色;align设置plt.xticks()函数中的标签的位置；
+#yerr让柱形图的顶端空出一部分。Plt.xticks(*args, **kwargs)函数：获取或者设置X轴当前刻度的标签。Tuple1，tuple2长度相等，tuple1为对应的刻度，
+tuple2为对应刻度的标签。
+
+#python模块collections中namedtuple()的理解:Python中存储系列数据，比较常见的数据类型有list，除此之外，还有tuple数据类型。相比与list，tuple中的元素
+不可修改，在映射中可以当键使用。tuple元组的item只能通过index访问，collections模块的namedtuple子类不仅可以使用item的index访问item，还可以通过
+item的name进行访问。可以将namedtuple理解为c中的struct结构，其首先将各个item命名，然后对每个item赋予数据。
+这里namedtuple函数返回的是一个名为typename的tuple子类，这个子类可以通过field_names访问子类的tuple成员，而不是原来的tuple检索访问，这样就提高了程序的可读性，具体可以参考第一个链接。然而这里要注意的是关于namedtuple里的_replace方法，会给然一点误解，比如
+[python] view plain copy
+from collections import namedtuple  
+point=namedtuple('point',['x','y'])  
+p=point(1,2)  
+print(p.x)  
+p._replace(x=3)  
+print(p.x)  
+p=p._replace(x=3)  
+print(p.x)  
+得到结果1,1,3,也就是说_replace方法并不是改变point里的x，而是新建了一个p，这个新建的p中的x=3，所以要改变原来的p还必须加上p=p._replace的这样的赋值语句
