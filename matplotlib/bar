@@ -109,6 +109,40 @@ for 循环使用 enumerate
 1 two
 2 three
 
+numpy.random.uniform介绍：
+1. 函数原型：  numpy.random.uniform(low,high,size)
+功能：从一个均匀分布[low,high)中随机采样，注意定义域是左闭右开，即包含low，不包含high.
+参数介绍: 
+    low: 采样下界，float类型，默认值为0；
+    high: 采样上界，float类型，默认值为1；
+    size: 输出样本数目，为int或元组(tuple)类型，例如，size=(m,n,k), 则输出m*n*k个样本，缺省时输出1个值。
+返回值：ndarray类型，其形状和参数size中描述一致。
+这里顺便说下ndarray类型，表示一个N维数组对象，其有一个shape（表维度大小）和dtype（说明数组数据类型的对象），使用zeros和ones函数可以创建数据全0或全1的数组，原型：
+    numpy.ones(shape,dtype=None,order='C'),
+其中，shape表数组形状（m*n）,dtype表类型,order表是以C还是fortran形式存放数据。
+2. 类似uniform,还有以下随机数产生函数：
+    a. randint: 原型：numpy.random.randint(low, high=None, size=None, dtype='l')，产生随机整数；
+    b. random_integers: 原型： numpy.random.random_integers(low, high=None, size=None)，在闭区间上产生随机整数；
+    c. random_sample: 原型： numpy.random.random_sample(size=None)，在[0.0,1.0)上随机采样；
+    d. random: 原型： numpy.random.random(size=None)，和random_sample一样，是random_sample的别名；
+    e. rand: 原型： numpy.random.rand(d0, d1, ..., dn)，产生d0 - d1 - ... - dn形状的在[0,1)上均匀分布的float型数。
+    f. randn: 原型：numpy.random.randn（d0,d1,...,dn),产生d0 - d1 - ... - dn形状的标准正态分布的float型数。
+s = np.random.uniform(0,1,1200)      # 产生1200个[0,1)的数  
+count, bins, ignored = plt.hist(s, 12, normed=True)  
+ """ 
+ hist原型： 
+         matplotlib.pyplot.hist(x, bins=10, range=None, normed=False, weights=None, 
+         cumulative=False, bottom=None, histtype='bar', align='mid',  
+         orientation='vertical',rwidth=None, log=False, color=None, label=None,  
+         stacked=False, hold=None,data=None,**kwargs) 
+ 
+ 输入参数很多，具体查看matplotlib.org,本例中用到3个参数，分别表示：s数据源，bins=12表示bin  
+ 的个数，即画多少条条状图，normed表示是否归一化，每条条状图y坐标为n/(len(x)`dbin),整个条状图积分值为1 
+ 
+ 输出：count表示数组，长度为bins，里面保存的是每个条状图的纵坐标值 
+      bins:数组，长度为bins+1,里面保存的是所有条状图的横坐标，即边缘位置 
+      ignored: patches，即附加参数，列表或列表的列表，本例中没有用到。 
+"""  
 
 代码：
 import numpy as np
