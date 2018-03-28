@@ -1,0 +1,156 @@
+#
+ fig.clf()  #清空图片
+ 
+ 饼图积累：
+ 饼图的生成
+=========
+matplotlib.pyplot.pie(x, explode=None, labels=None, colors=None, autopct=None, pctdistance=0.6, shadow=False, labeldistance=1.1, 
+startangle=None, radius=None, counterclock=True, wedgeprops=None, textprops=None, center=(0, 0), frame=False, rotatelabels=False,
+hold=None, data=None)
+x       (每一块)的比例，如果sum(x) > 1会使用sum(x)归一化
+labels  (每一块)饼图外侧显示的说明文字
+explode (每一块)离开中心距离
+startangle  起始绘制角度,默认图是从x轴正方向逆时针画起,如设定=90则从y轴正方向画起
+shadow  是否阴影
+labeldistance label绘制位置,相对于半径的比例, 如<1则绘制在饼图内侧
+autopct 控制饼图内百分比设置,可以使用format字符串或者format function
+        '%1.1f'指小数点前后位数(没有用空格补齐)
+pctdistance 类似于labeldistance,指定autopct的位置刻度
+radius  控制饼图半径
+返回值:
+如果没有设置autopct,返回(patches, texts)
+如果设置autopct,返回(patches, texts, autotexts)texts是饼外的label,autotexts是饼内的label
+
+2、matplotlib.gridspec 是一个模块，用于指定图中子图的位置。
+===========================================
+matplotlib.gridspec.GridSpec（nrows，ncols，left = None，bottom = None，right = None，top = None，wspace = None，hspace = None，
+width_ratios = None，height_ratios = None ）
+
+GridSpec
+指定子图将放置的网格的几何位置。 需要设置网格的行数和列数。 子图布局参数（例如，左，右等）可以选择性调整。
+
+SubplotSpec
+指定在给定GridSpec中的子图位置。
+
+subplot2grid
+一个辅助函数，类似于pyplot.subplot，但是使用基于 0 的索引，并可使子图跨越多个格子。
+
+ax = plt.subplot2grid((2,2),(0, 0))
+等价于：
+ax = plt.subplot(2,2,1)
+
+       nRow=2, nCol=2
+(0,0) +-------+-------+
+      |   1   |       |
+      +-------+-------+
+      |       |       |
+      +-------+-------+
+      
+ GridSpec和SubplotSpec
+
+你可以显式创建GridSpec并用它们创建子图。
+例如，
+ax = plt.subplot2grid((2,2),(0, 0))
+等价于：
+import matplotlib.gridspec as gridspec
+gs = gridspec.GridSpec(2, 2)
+ax = plt.subplot(gs[0, 0])     
+
+柱形图：
+#bar(left, height, width, color, align, yerr)函数：绘制柱形图。left为x轴的位置序列，一般采用arange函数产生一个序列；height为y轴的数值序列，也就是
+柱形图的高度，一般就是我们需要展示的数据；width为柱形图的宽度，一般这是为1即可；color为柱形图填充的颜色;align设置颜色深度，plt.xticks()函数中的标签的位置；
+#yerr让柱形图的顶端空出一部分。Plt.xticks(*args, **kwargs)函数：获取或者设置X轴当前刻度的标签。
+#fig.tight_layout()紧凑显示图片，居中显示
+#python模块collections中namedtuple()的理解:Python中存储系列数据，比较常见的数据类型有list，除此之外，还有tuple数据类型。相比与list，tuple中的元素
+不可修改，在映射中可以当键使用。tuple元组的item只能通过index访问，collections模块的namedtuple子类不仅可以使用item的index访问item，还可以通过
+item的name进行访问。可以将namedtuple理解为c中的struct结构，其首先将各个item命名，然后对每个item赋予数据。
+这里namedtuple函数返回的是一个名为typename的tuple子类，这个子类可以通过field_names访问子类的tuple成员，而不是原来的tuple检索访问，这样就提高了程序的可读性，具体可以参考第一个链接。然而这里要注意的是关于namedtuple里的_replace方法，会给然一点误解，比如
+[python] view plain copy
+from collections import namedtuple  
+point=namedtuple('point',['x','y'])  
+p=point(1,2)  
+print(p.x)  
+p._replace(x=3)  
+print(p.x)  
+p=p._replace(x=3)  
+print(p.x)  
+得到结果1,1,3,也就是说_replace方法并不是改变point里的x，而是新建了一个p，这个新建的p中的x=3，所以要改变原来的p还必须加上p=p._replace的这样的赋值语句
+#dict()函数构造字典一共有三种:第一种：dict() 构造一个空列表，无需多言
+#第二种：dict(**kwargs) dict函数需要传入关键字参数。
+#dict(a='a', b='b', t='t')
+#{'a': 'a', 'b': 'b', 't': 't'}
+#这里有需要注意的地方：关键字参数的等号左边必须为一个变量。而且右边必须为一个值，不可为变量。否则会报错
+#第三种：dict(mapping)
+#这里的mapping本质上是一个第二维有且仅有两个元素的容器
+## 例子1
+>>> a = set([(1,2)])
+>>> dict(a)
+{1: 2}
+#zip()该函数返回一个以元组为元素的列表，其中第 i 个元组包含每个参数序列的第 i 个元素。返回的列表长度被截断为最短的参数序列的长度。
+#只有一个序列参数时，它返回一个1元组的列表。没有参数时，它返回一个空的列表。
+import numpy as np
+a=[1,2,3,4,5]
+b=(1,2,3,4,5)
+c=np.arange(5)
+d="zhang"
+zz=zip(a,b,c,d)
+print(zz)
+输出：
+[(1, 1, 0, 'z'), (2, 2, 1, 'h'), (3, 3, 2, 'a'), (4, 4, 3, 'n'), (5, 5, 4, 'g')]
+
+Python enumerate() 函数:
+enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中。
+语法
+以下是 enumerate() 方法的语法:
+enumerate(sequence, [start=0])
+参数
+sequence -- 一个序列、迭代器或其他支持迭代对象。
+start -- 下标起始位置。
+>>>seasons = ['Spring', 'Summer', 'Fall', 'Winter']
+>>> list(enumerate(seasons))
+[(0, 'Spring'), (1, 'Summer'), (2, 'Fall'), (3, 'Winter')]
+>>> list(enumerate(seasons, start=1))       # 小标从 1 开始
+[(1, 'Spring'), (2, 'Summer'), (3, 'Fall'), (4, 'Winter')]
+for 循环使用 enumerate
+>>>seq = ['one', 'two', 'three']
+>>> for i, element in enumerate(seq):
+...     print i, seq[i]
+... 
+0 one
+1 two
+2 three
+
+numpy.random.uniform介绍：
+1. 函数原型：  numpy.random.uniform(low,high,size)
+功能：从一个均匀分布[low,high)中随机采样，注意定义域是左闭右开，即包含low，不包含high.
+参数介绍: 
+    low: 采样下界，float类型，默认值为0；
+    high: 采样上界，float类型，默认值为1；
+    size: 输出样本数目，为int或元组(tuple)类型，例如，size=(m,n,k), 则输出m*n*k个样本，缺省时输出1个值。
+返回值：ndarray类型，其形状和参数size中描述一致。
+这里顺便说下ndarray类型，表示一个N维数组对象，其有一个shape（表维度大小）和dtype（说明数组数据类型的对象），使用zeros和ones函数可以创建数据全0或全1的数组，原型：
+    numpy.ones(shape,dtype=None,order='C'),
+其中，shape表数组形状（m*n）,dtype表类型,order表是以C还是fortran形式存放数据。
+2. 类似uniform,还有以下随机数产生函数：
+    a. randint: 原型：numpy.random.randint(low, high=None, size=None, dtype='l')，产生随机整数；
+    b. random_integers: 原型： numpy.random.random_integers(low, high=None, size=None)，在闭区间上产生随机整数；
+    c. random_sample: 原型： numpy.random.random_sample(size=None)，在[0.0,1.0)上随机采样；
+    d. random: 原型： numpy.random.random(size=None)，和random_sample一样，是random_sample的别名；
+    e. rand: 原型： numpy.random.rand(d0, d1, ..., dn)，产生d0 - d1 - ... - dn形状的在[0,1)上均匀分布的float型数。
+    f. randn: 原型：numpy.random.randn（d0,d1,...,dn),产生d0 - d1 - ... - dn形状的标准正态分布的float型数。
+s = np.random.uniform(0,1,1200)      # 产生1200个[0,1)的数  
+count, bins, ignored = plt.hist(s, 12, normed=True)  
+ """ 
+ hist原型： 
+         matplotlib.pyplot.hist(x, bins=10, range=None, normed=False, weights=None, 
+         cumulative=False, bottom=None, histtype='bar', align='mid',  
+         orientation='vertical',rwidth=None, log=False, color=None, label=None,  
+         stacked=False, hold=None,data=None,**kwargs) 
+ 
+ 输入参数很多，具体查看matplotlib.org,本例中用到3个参数，分别表示：s数据源，bins=12表示bin  
+ 的个数，即画多少条条状图，normed表示是否归一化，每条条状图y坐标为n/(len(x)`dbin),整个条状图积分值为1 
+ 
+ 输出：count表示数组，长度为bins，里面保存的是每个条状图的纵坐标值 
+      bins:数组，长度为bins+1,里面保存的是所有条状图的横坐标，即边缘位置 
+      ignored: patches，即附加参数，列表或列表的列表，本例中没有用到。 
+"""  
