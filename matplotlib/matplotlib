@@ -157,3 +157,50 @@ count, bins, ignored = plt.hist(s, 12, normed=True)
 
 scatter函数：
 https://blog.csdn.net/u013634684/article/details/49646311
+
+添加文本信息text（）函数：
+matplotlib.pyplot.text(x, y, s, fontdict=None, withdash=False, **kwargs)
+
+x, y：表示坐标；
+s：字符串文本；
+fontdict：字典，可选；
+kw： 
+fontsize=12,
+horizontalalignment=‘center’、ha=’cener’
+verticalalignment=’center’、va=’center’
+fig.text()（fig = plt.figure(…)）
+ax.text()（ax = plt.subplot(…)）
+
+# 加上两个文本框
+bbox_props = dict(boxstyle="round", fc="w", ec="0.5", alpha=0.9)#fc为文本框填充颜色，ec为文本框边界颜色，alpha为文本框填充透明度
+ax.text(-2, -2, "Sample A", ha="center", va="center", size=20,
+        bbox=bbox_props)#ha和va是水平与垂直方向上的位置，size文本框大小，bbox文本框形状
+ax.text(2, 2, "Sample B", ha="center", va="center", size=20,
+        bbox=bbox_props)
+# 加上一个箭头文本框
+bbox_props = dict(boxstyle="rarrow", fc=(0.8,0.9,0.9), ec="b", lw=2)#lw边界粗细
+t = ax.text(0, 0, "Direction", ha="center", va="center", rotation=45,
+            size=15,
+            bbox=bbox_props)#ratation为箭头指的角度
+ax.set_xlim(-4, 4)
+ax.set_ylim(-4, 4)#设置横纵坐标范围
+与# 设置显示范围
+ax.axis([0, 10, 0, 10])效果一样
+
+#去掉坐标轴
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.spines['left'].set_color('none')
+ax.spines['bottom'].set_color('none')
+
+# 注释文本和箭头
+ax.plot([2], [1], 'o')
+ax.annotate('annotate', xy=(2, 1), xytext=(3, 4),
+            arrowprops=dict(facecolor='black', shrink=0.05))#shrink线长度
+     # Axes 对象表示 Figure 对象中的子图
+# 这里只有一幅图像，所以使用 add_subplot(111)
+ax = fig.add_subplot(111)
+fig.subplots_adjust(top=0.85)       
+# 数学公式，用 $$ 输入 Tex 公式
+ax.text(2, 6, r'an equation: $E=mc^2$', fontsize=15)
+ 
