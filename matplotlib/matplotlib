@@ -154,3 +154,6 @@ count, bins, ignored = plt.hist(s, 12, normed=True)
       bins:数组，长度为bins+1,里面保存的是所有条状图的横坐标，即边缘位置 
       ignored: patches，即附加参数，列表或列表的列表，本例中没有用到。 
 """  
+
+scatter函数：
+https://blog.csdn.net/u013634684/article/details/49646311
