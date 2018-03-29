@@ -141,6 +141,8 @@ numpy.random.uniform介绍：
 s = np.random.uniform(0,1,1200)      # 产生1200个[0,1)的数  
 count, bins, ignored = plt.hist(s, 12, normed=True)  
  """ 
+ 
+ 
  hist原型： 
          matplotlib.pyplot.hist(x, bins=10, range=None, normed=False, weights=None, 
          cumulative=False, bottom=None, histtype='bar', align='mid',  
@@ -203,4 +205,33 @@ ax = fig.add_subplot(111)
 fig.subplots_adjust(top=0.85)       
 # 数学公式，用 $$ 输入 Tex 公式
 ax.text(2, 6, r'an equation: $E=mc^2$', fontsize=15)
- 
+
+#Matplotlib中用于折线处理的主要类是Path。几乎所有的矢量绘图都使用Path绘图管道中的某处,Path 代表一系列可能断开的，可能是封闭的线段和曲线段。
+
+ 底层存储由两个并行的numpy数组组成：
+顶点：一个Nx2浮点数的顶点
+代码：顶点类型的N长度uint8数组
+
+产生特殊形状的 marker key¶
+有时我们可以产生一些特殊形状的 marker：
+块状：
+In [4]:
+import matplotlib.patches as mpatches
+red_patch = mpatches.Patch(color='red', label='The red data')
+plt.legend(handles=[red_patch])
+plt.show()
+legend() 函数被用来添加图像的标签，其主要相关的属性有：
+legend entry - 一个 legend 包含一个或多个 entry，一个 entry 对应一个 key 和一个 label
+legend key - marker 的标记
+legend label - key 的说明
+legend handle - 一个 entry 在图上对应的对象
+
+调用 legend() 会自动获取当前的 Axes 对象，并且得到这些 handles 和 labels，相当于：
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles, labels)
+
+np.random.seed(19680801)
+seed( ) 用于指定随机数生成时所用算法开始的整数值。 
+1.如果使用相同的seed( )值，则每次生成的随即数都相同； 
+2.如果不设置这个值，则系统根据时间来自己选择这个值，此时每次生成的随机数因时间差异而不同。 
+3.设置的seed()值仅一次有效
