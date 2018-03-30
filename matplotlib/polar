@@ -1,0 +1,43 @@
+set_theta_zero_location方法用于设置极坐标0°位置
+•0°可设置在八个位置，分别为N, NW, W, SW, S, SE, E, NE
+•当set_theta_zero_location的参数值为'N','NW','W','SW','S','SE','E','NE'时，0°分别对应的位置为方位N, NW, W, SW, S, SE, E, NE；
+•默认情况下0°位于E方位
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+r = np.arange(0, 2, 0.01)
+theta = 2 * np.pi * r
+
+ax = plt.subplot(111, projection='polar')#画极坐标
+ax.plot(theta, r)
+ax.set_rmax(2)#set_rmax方法用于设置显示的极径最大值
+•该方法要在绘制完图像后使用才有效;set_rmin方法用于设置显示的极径最小值
+•该方法要在绘制完图像后使用才有效
+ax.set_rticks([0.5, 1, 1.5, 2])  # Less radial ticks set_rticks方法用于设置极径网格线的显示范围
+ax.set_rlabel_position(-22.5)  # Move radial labels away from plotted line set_rlabel_position方法用于设置极径标签显示位置•参数为标签
+所要显示在的角度
+ax.grid(True)
+ax.set_title("A line plot on a polar axis", va='bottom')
+plt.show()
+
+
+
+set_theta_direction方法用于设置极坐标的正方向
+•当set_theta_direction的参数值为1,'counterclockwise'或者是'anticlockwise'的时候，正方向为逆时针；
+•当set_theta_direction的参数值为-1或者是'clockwise'的时候，正方向为顺时针；
+•默认情况下正方向为逆时针
+set_theta_zero_location方法用于设置极坐标0°位置
+•0°可设置在八个位置，分别为N, NW, W, SW, S, SE, E, NE
+•当set_theta_zero_location的参数值为'N','NW','W','SW','S','SE','E','NE'时，0°分别对应的位置为方位N, NW, W, SW, S, SE, E, NE；
+•默认情况下0°位于E方位
+set_thetagrids方法用于设置极坐标角度网格线显示
+•参数为所要显示网格线的角度值列表
+•默认显示0°、45°、90°、135°、180°、225°、270°、315°的网格线
+set_theta_offset方法用于设置角度偏离
+•参数值为弧度值数值
+set_rgrids方法用于设置极径网格线显示
+•参数值为所要显示网格线的极径值列表，最小值不能小于等于0
+set_rlim方法用于设置显示的极径范围
+•参数为极径最小值，最大值
