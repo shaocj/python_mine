@@ -311,4 +311,6 @@ ax.spines['left'].set_position(('data',0))
 
 # 加入图例，frameon表示去掉图例周围的边框
 l = plt.legend(['cosine', 'sine'], loc='upper left', frameon=False)
- 	
+
+set_rmax方法用于设置显示的极径最大值
+•该方法要在绘制完图像后使用才有效
