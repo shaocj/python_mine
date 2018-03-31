@@ -132,3 +132,26 @@ ax = fig.add_subplot(111)
 ax.set_xlabel('Percentage of Time Spent Playing Video Games')
 2、import matplotlib.pyplot as plt
 plt.xlabes('Percentage of Time Spent Playing Video Games')
+
+numpy.meshgrid
+meshgrid函数用两个坐标轴上的点在平面上画格
+x = np.arange(-1, 1)
+y = np.arange(-2, 2)
+X, Y = np.meshgrid(x, y)
+print(x)
+print(y)
+print(X)
+print(Y)
+x行数为Y的个数
+[-1  0]
+[-2 -1  0  1]
+[[-1  0]
+ [-1  0]
+ [-1  0]
+ [-1  0]]
+[[-2 -2]
+ [-1 -1]
+ [ 0  0]
+ [ 1  1]]
+ 
+# R = np.sqrt(X**2 + Y**2)
