@@ -155,3 +155,44 @@ x行数为Y的个数
  [ 1  1]]
  
 # R = np.sqrt(X**2 + Y**2)
+
+Python中append和extend的区别
+编者注：本文主要参考了《Python核心编程（第二版）》
+
+网上有很多对这两个函数的区别讲解，但我觉得都讲的不是很清楚，记忆不深刻。这样解释清楚且容易记住。
+
+list.append(object) 向列表中添加一个对象object
+list.extend(sequence) 把一个序列seq的内容添加到列表中
+music_media = ['compact disc', '8-track tape', 'long playing record']
+new_media = ['DVD Audio disc', 'Super Audio CD']
+music_media.append(new_media)
+print music_media
+>>>['compact disc', '8-track tape', 'long playing record', ['DVD Audio disc', 'Super Audio CD']]
+使用append的时候，是将new_media看作一个对象，整体打包添加到music_media对象中。
+music_media = ['compact disc', '8-track tape', 'long playing record']
+new_media = ['DVD Audio disc', 'Super Audio CD']
+music_media.extend(new_media)
+print music_media
+>>>['compact disc', '8-track tape', 'long playing record', 'DVD Audio disc', 'Super Audio CD']
+使用extend的时候，是将new_media看作一个序列，将这个序列和music_media序列合并，并放在其后面。
+
+set:set是一个无序且不重复的元素集合。set也有如下特性：
+不重复
+元素为不可变对象
+a=set('boy')
+b=set(['y', 'b', 'o','o'])
+c=set({"k1":'v1','k2':'v2'})
+d={'k1','k2','k2'}
+e={('k1', 'k2','k2')}
+print(a,type(a))
+print(b,type(b))
+print(c,type(c))
+print(d,type(d))
+print(e,type(e))
+
+OUTPUT:
+{'o', 'b', 'y'} <class 'set'>
+{'o', 'b', 'y'} <class 'set'>
+{'k1', 'k2'} <class 'set'>
+{'k1', 'k2'} <class 'set'>
+{('k1', 'k2', 'k2')} <class 'set'>
