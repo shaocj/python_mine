@@ -1,8 +1,8 @@
 #
  fig.clf()  #清空图片
- 
  饼图积累：
  饼图的生成
+ 
 =========
 matplotlib.pyplot.pie(x, explode=None, labels=None, colors=None, autopct=None, pctdistance=0.6, shadow=False, labeldistance=1.1, 
 startangle=None, radius=None, counterclock=True, wedgeprops=None, textprops=None, center=(0, 0), frame=False, rotatelabels=False,
@@ -314,3 +314,10 @@ l = plt.legend(['cosine', 'sine'], loc='upper left', frameon=False)
 
 set_rmax方法用于设置显示的极径最大值
 •该方法要在绘制完图像后使用才有效
+
+subplot2grid用法：
+ax1 = plt.subplot2grid((3, 3), (0, 0), colspan=3)
+ax2 = plt.subplot2grid((3, 3), (1, 0), colspan=2)
+ax3 = plt.subplot2grid((3, 3), (1, 2), rowspan=2)
+ax4 = plt.subplot2grid((3, 3), (2, 0))
+ax5 = plt.subplot2grid((3, 3), (2, 1))
