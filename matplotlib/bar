@@ -1,6 +1,7 @@
 一、
 #bar(left, height, width, color, align, yerr)函数：绘制柱形图。left为x轴的位置序列，一般采用arange函数产生一个序列；height为y轴的数值序列，也就是
-柱形图的高度，一般就是我们需要展示的数据；width为柱形图的宽度，一般这是为1即可；color为柱形图填充的颜色;align设置颜色深度，plt.xticks()函数中的标签的位置；
+柱形图的高度，一般就是我们需要展示的数据；width为柱形图的宽度，一般这是为1即可；color为柱形图填充的颜色;align设置颜色深度，plt.xticks()函数中的
+标签的位置；
 #yerr让柱形图的顶端空出一部分。Plt.xticks(*args, **kwargs)函数：获取或者设置X轴当前刻度的标签。
 #fig.tight_layout()紧凑显示图片，居中显示
 #python模块collections中namedtuple()的理解:Python中存储系列数据，比较常见的数据类型有list，除此之外，还有tuple数据类型。相比与list，tuple中的元素
