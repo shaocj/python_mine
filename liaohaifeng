@@ -1,0 +1,722 @@
+
+
+一是必选参数在前，默认参数在后，否则Python的解释器会报错（思考一下为什么默认参数不能放在必选参数前面）；
+
+ 定义默认参数要牢记一点：默认参数必须指向不变对象！
+
+def add_end(L=[]):
+
+    L.append('END')
+
+    return L
+
+但是，再次调用add_end()时，结果就不对了：
+
+ 
+
+>>> add_end()
+
+['END', 'END']
+
+>>> add_end()
+
+['END', 'END', 'END']
+
+Python函数在定义的时候，默认参数L的值就被计算出来了，即[]，因为默认参数L也是一个变量，它指向对象[]，每次调用该函数，如果改变了L的内容，则下次调用时，默认参数的内容就变了，不再是函数定义时的[]了。
+
+修改上面的例子，我们可以用None这个不变对象来实现：
+
+ 
+
+def add_end(L=None):
+
+    if L is None:
+
+        L = []
+
+    L.append('END')
+
+    return L
+
+现在，无论调用多少次，都不会有问题：
+
+ 
+
+>>> add_end()
+
+['END']
+
+>>> add_end()
+
+['END']
+
+为什么要设计str、None这样的不变对象呢？因为不变对象一旦创建，对象内部的数据就不能修改，这样就减少了由于修改数据导致的错误。此外，由于对象不变，多任务环境下同时读取对象不需要加锁，同时读一点问题都没有。我们在编写程序时，如果可以设计一个不变对象，那就尽量设计成不变对象
+
+ 
+
+*nums表示把nums这个list的所有元素作为可变参数传进去。这种写法相当有用，而且很常见。
+
+ 
+
+**extra表示把extra这个dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict，注意kw获得的dict是extra的一份拷贝，对kw的改动不会影响到函数外的extra。
+
+命名关键字参数
+
+ 
+
+对于关键字参数，函数的调用者可以传入任意不受限制的关键字参数。至于到底传入了哪些，就需要在函数内部通过kw检查。
+
+ 
+
+仍以person()函数为例，我们希望检查是否有city和job参数：
+
+ 
+
+def person(name, age, **kw):
+
+    if 'city' in kw:
+
+        # 有city参数
+
+        pass
+
+    if 'job' in kw:
+
+        # 有job参数
+
+        pass
+
+    print('name:', name, 'age:',
+age, 'other:', kw)
+
+但是调用者仍可以传入不受限制的关键字参数：
+
+ 
+
+>>> person('Jack', 24,
+city='Beijing', addr='Chaoyang', zipcode=123456)
+
+如果要限制关键字参数的名字，就可以用命名关键字参数，例如，只接收city和job作为关键字参数。这种方式定义的函数如下：
+
+ 
+
+def person(name, age, *, city, job):
+
+    print(name, age, city, job)
+
+和关键字参数**kw不同，命名关键字参数需要一个特殊分隔符*，*后面的参数被视为命名关键字参数。
+
+ 
+
+调用方式如下：
+
+ 
+
+>>> person('Jack', 24,
+city='Beijing', job='Engineer')
+
+Jack 24 Beijing Engineer
+
+如果函数定义中已经有了一个可变参数，后面跟着的命名关键字参数就不再需要一个特殊分隔符*了：
+
+ 
+
+def person(name, age, *args, city, job):
+
+    print(name, age, args, city,
+job)
+
+命名关键字参数必须传入参数名，这和位置参数不同。如果没有传入参数名，调用将报错：
+
+ 
+
+>>> person('Jack', 24, 'Beijing',
+'Engineer')
+
+Traceback (most recent call last):
+
+  File "<stdin>", line
+1, in <module>
+
+TypeError: person() takes 2 positional
+arguments but 4 were given
+
+由于调用时缺少参数名city和job，Python解释器把这4个参数均视为位置参数，但person()函数仅接受2个位置参数。
+
+ 
+
+命名关键字参数可以有缺省值，从而简化调用：
+
+ 
+
+def person(name, age, *, city='Beijing',
+job):
+
+    print(name, age, city, job)
+
+由于命名关键字参数city具有默认值，调用时，可不传入city参数：
+
+ 
+
+>>> person('Jack', 24,
+job='Engineer')
+
+Jack 24 Beijing Engineer
+
+使用命名关键字参数时，要特别注意，如果没有可变参数，就必须加一个*作为特殊分隔符。如果缺少*，Python解释器将无法识别位置参数和命名关键字参数：
+
+ 
+
+def person(name, age, city, job):
+
+    # 缺少 *，city和job被视为位置参数
+
+    pass
+
+但是请注意，参数定义的顺序必须是：必选参数、默认参数、可变参数、命名关键字参数和关键字参数。
+
+ 
+
+*args是可变参数，args接收的是一个tuple；
+
+ 
+
+**kw是关键字参数，kw接收的是一个dict。
+
+ 
+
+以及调用函数时如何传入可变参数和关键字参数的语法：
+
+ 
+
+可变参数既可以直接传入：func(1,
+2, 3)，又可以先组装list或tuple，再通过*args传入：func(*(1,
+2, 3))；
+
+ 
+
+关键字参数既可以直接传入：func(a=1,
+b=2)，又可以先组装dict，再通过**kw传入：func(**{'a': 1, 'b': 2})。
+
+ 
+
+使用*args和**kw是Python的习惯写法，当然也可以用其他参数名，但最好使用习惯用法。
+
+ 
+
+使用递归函数需要注意防止栈溢出。在计算机中，函数调用是通过栈（stack）这种数据结构实现的，每当进入一个函数调用，栈就会加一层栈帧，每当函数返回，栈就会减一层栈帧。由于栈的大小不是无限的，所以，递归调用的次数过多，会导致栈溢出。可以试试fact(1000)：
+
+ 
+
+>>> fact(1000)
+
+Traceback (most recent call last):
+
+  File "<stdin>", line
+1, in <module>
+
+  File "<stdin>", line
+4, in fact
+
+  ...
+
+  File "<stdin>", line
+4, in fact
+
+RuntimeError: maximum recursion depth
+exceeded in comparison
+
+解决递归调用栈溢出的方法是通过尾递归优化，事实上尾递归和循环的效果是一样的，所以，把循环看成是一种特殊的尾递归函数也是可以的。
+
+ 
+
+尾递归是指，在函数返回的时候，调用自身本身，并且，return语句不能包含表达式。这样，编译器或者解释器就可以把尾递归做优化，使递归本身无论调用多少次，都只占用一个栈帧，不会出现栈溢出的情况。
+
+ 
+
+上面的fact(n)函数由于return n * fact(n - 1)引入了乘法表达式，所以就不是尾递归了。要改成尾递归方式，需要多一点代码，主要是要把每一步的乘积传入到递归函数中：
+
+ 
+
+def fact(n):
+
+    return fact_iter(n, 1)
+
+ 
+
+def fact_iter(num, product):
+
+    if num == 1:
+
+        return product
+
+    return fact_iter(num - 1, num
+* product)
+
+可以看到，return
+fact_iter(num - 1, num * product)仅返回递归函数本身，num - 1和num * product在函数调用前就会被计算，不影响函数调用。
+
+>>> d = {'a': 1, 'b': 2, 'c': 3}
+
+>>> for key in d:
+
+...     print(key)
+
+...
+
+a
+
+c
+
+b
+
+因为dict的存储不是按照list的方式顺序排列，所以，迭代出的结果顺序很可能不一样。
+
+ 
+
+默认情况下，dict迭代的是key。如果要迭代value，可以用for value in d.values()，如果要同时迭代key和value，可以用for k, v in d.items()。
+
+ 
+
+ 
+
+######
+
+默认情况下，dict迭代的是key。如果要迭代value，可以用for
+value in d.values()，如果要同时迭代key和value，可以用for
+k, v in d.items()。
+
+，如何判断一个对象是可迭代对象呢？方法是通过collections模块的Iterable类型判断：
+
+>>> from collections import Iterable
+
+>>> isinstance('abc', Iterable) # str是否可迭代
+
+True
+
+>>> isinstance([1,2,3], Iterable) # list是否可迭代
+
+True
+
+>>> isinstance(123, Iterable) # 整数是否可迭代
+
+False
+
+ 
+
+Python内置的enumerate函数可以把一个list变成索引-元素对，这样就可以在for循环中同时迭代索引和元素本身：
+
+>>> for i, value in enumerate(['A', 'B', 'C']):
+
+...     print(i,
+value)
+
+...
+
+0 A
+
+1 B
+
+2 C
+
+使用内建的isinstance函数可以判断一个变量是不是字符串：
+
+>>> x = 'abc'
+
+>>> y = 123
+
+>>> isinstance(x, str)
+
+True
+
+>>> isinstance(y, str)
+
+False
+
+ 
+
+生成器：generator。
+
+要创建一个generator，有很多种方法。第一种方法很简单，只要把一个列表生成式的[]改成()，就创建了一个generator：
+
+>>> L = [x * x for x in range(10)]
+
+>>> L
+
+[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+>>> g = (x * x for x in range(10))
+
+>>> g
+
+<generator object <genexpr> at 0x1022ef630>
+
+创建L和g的区别仅在于最外层的[]和()，L是一个list，而g是一个generator
+
+斐波拉契数列用列表生成式写不出来，但是，用函数把它打印出来却很容易：
+
+def fib(max):
+
+    n, a, b = 0, 0,
+1
+
+    while n <
+max:
+
+        print(b)
+
+        a, b = b, a
++ b
+
+        n = n + 1
+
+    return 'done'
+
+fib函数实际上是定义了斐波拉契数列的推算规则，可以从第一个元素开始，推算出后续任意的元素，这种逻辑其实非常类似generator。
+
+也就是说，上面的函数和generator仅一步之遥。要把fib函数变成generator，只需要把print(b)改为yield b就可以了：
+
+def fib(max):
+
+    n, a, b = 0, 0,
+1
+
+    while n <
+max:
+
+        yield b
+
+        a, b = b, a
++ b
+
+        n = n + 1
+
+    return 'done'
+
+最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
+
+最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
+
+举个简单的例子，定义一个generator，依次返回数字1，3，5：
+
+def odd():
+
+    print('step 1')
+
+    yield 1
+
+    print('step 2')
+
+    yield(3)
+
+    print('step 3')
+
+    yield(5)
+
+调用该generator时，首先要生成一个generator对象，然后用next()函数不断获得下一个返回值：
+
+>>> o = odd()
+
+>>> next(o)
+
+step 1
+
+1
+
+>>> next(o)
+
+step 2
+
+3
+
+>>> next(o)
+
+step 3
+
+5
+
+但是用for循环调用generator时，发现拿不到generator的return语句的返回值。如果想要拿到返回值，必须捕获StopIteration错误，返回值包含在StopIteration的value中：
+
+>>> g = fib(6)
+
+>>> while True:
+
+...     try:
+
+...         x =
+next(g)
+
+...         print('g:',
+x)
+
+...     except StopIteration
+as e:
+
+...         print('Generator
+return value:', e.value)
+
+...         break
+
+...
+
+g: 1
+
+g: 1
+
+g: 2
+
+g: 3
+
+g: 5
+
+g: 8
+
+Generator return value: done
+
+#将杨辉三角的每一行看成一个list,写一个生成器（generator）,不断输出下一行list
+
+def triangles(): 
+
+ret = [1]
+
+ while len(ret)-1 < 10:
+
+ yield ret 
+
+ret = [ ret[i] + ret[i+1] for i in range(len(ret)-1)] 
+
+ret.insert(0,1) 
+
+ret.append(1)
+
+n = 0
+
+results = []
+
+for t in triangles():
+
+    print(t)
+
+   
+results.append(t)
+
+    n = n + 1
+
+    if n == 10:
+
+        break
+
+if results == [
+
+    [1],
+
+    [1, 1],
+
+    [1, 2, 1],
+
+    [1, 3, 3,
+1],
+
+    [1, 4, 6, 4,
+1],
+
+    [1, 5, 10,
+10, 5, 1],
+
+    [1, 6, 15,
+20, 15, 6, 1],
+
+    [1, 7, 21,
+35, 35, 21, 7, 1],
+
+    [1, 8, 28,
+56, 70, 56, 28, 8, 1],
+
+    [1, 9, 36,
+84, 126, 126, 84, 36, 9, 1]
+
+]:
+
+    print('测试通过!')
+
+else:
+
+print('测试失败!')
+
+可以使用isinstance()判断一个对象是否是Iterable对象：
+
+>>> from collections import Iterable
+
+>>> isinstance([], Iterable)
+
+True
+
+>>> isinstance({}, Iterable)
+
+True
+
+>>> isinstance('abc', Iterable)
+
+True
+
+可以被next()函数调用并不断返回下一个值的对象称为迭代器：Iterator。
+
+可以使用isinstance()判断一个对象是否是Iterator对象：
+
+>>> from collections import Iterator
+
+>>> isinstance((x for x in range(10)), Iterator)
+
+True
+
+>>> isinstance([], Iterator)
+
+False
+
+>>> isinstance({}, Iterator)
+
+False
+
+>>> isinstance('abc', Iterator)
+
+False
+
+生成器都是Iterator对象，但list、dict、str虽然是Iterable，却不是Iterator。
+
+把list、dict、str等Iterable变成Iterator可以使用iter()函数：
+
+>>> isinstance(iter([]), Iterator)
+
+True
+
+>>> isinstance(iter('abc'), Iterator)
+
+True
+
+小结
+
+凡是可作用于for循环的对象都是Iterable类型；
+
+凡是可作用于next()函数的对象都是Iterator类型，它们表示一个惰性计算的序列；
+
+集合数据类型如list、dict、str等是Iterable但不是Iterator，不过可以通过iter()函数获得一个Iterator对象。
+
+Python的for循环本质上就是通过不断调用next()函数实现的，例如：
+
+for x in [1, 2, 3, 4, 5]:
+
+    pass
+
+实际上完全等价于：
+
+# 首先获得Iterator对象:
+
+it = iter([1, 2, 3, 4, 5])
+
+# 循环:
+
+while True:
+
+    try:
+
+        # 获得下一个值:
+
+        x =
+next(it)
+
+    except
+StopIteration:
+
+        # 遇到StopIteration就退出循环
+
+        break
+
+ 
+
+ 
+
+高阶函数
+
+map()函数接收两个参数，一个是函数，一个是Iterable，map将传入的函数依次作用到序列的每个元素，并把结果作为新的Iterator返回。
+
+举例说明，比如我们有一个函数f(x)=x2，要把这个函数作用在一个list [1, 2, 3, 4, 5, 6, 7, 8, 9]上，就可以用map()实现如下：
+
+>>> def f(x):
+
+...     return x *
+x
+
+...
+
+>>> r = map(f, [1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+>>> list(r)
+
+[1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+如果考虑到字符串str也是一个序列，对上面的例子稍加改动，配合map()，我们就可以写出把str转换为int的函数：
+
+>>> from functools import reduce
+
+>>> def fn(x, y):
+
+...     return x * 10
++ y
+
+...
+
+>>> def char2num(s):
+
+...     digits = {'0':
+0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+
+...     return
+digits[s]
+
+...
+
+>>> reduce(fn, map(char2num, '13579'))
+
+13579
+
+filter()也接收一个函数和一个序列。和map()不同的是，filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
+
+例如，在一个list中，删掉偶数，只保留奇数，可以这么写：
+
+def is_odd(n):
+
+    return n % 2 ==
+1
+
+ 
+
+list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15]))
+
+# 结果: [1, 5, 9,
+15]
+
+ 
+
+迭代器的一大优点是不要求事先准备好整个迭代过程中所有的元素。迭代器仅仅在迭代到某个元素时才计算该元素，而在这之前或之后，元素可以不存在或者被销毁
+
+迭代器有两个基本的方法
+
+
+ next方法：返回迭代器的下一个元素
+ __iter__方法：返回迭代器对象本身
+
+
+Iterator继承自Iterable，从下面的测试中可以很方便的看到Iterator包含__iter()和next()方法，而Iteratble仅仅包含iter__()。
+
+iterable需要包含有__iter()方法用来返回iterator，而iterator需要包含有next__()方法用来被循环
+
+如果我们自己定义迭代器，只要在类里面定义一个 iter() 函数，用它来返回一个带 next() 方法的对象就够了。
+
+Python内置的sorted()函数就可以对list进行排序：
+
+>>> sorted([36, 5, -12, 9, -21])
+
+[-21, -12, 5, 9, 36]
+
+返回一个函数时，牢记该函数并未执行，返回函数中不要引用任何可能会变化的变量。
+
