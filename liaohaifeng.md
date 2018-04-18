@@ -1,5 +1,4 @@
 
-
 一是必选参数在前，默认参数在后，否则Python的解释器会报错（思考一下为什么默认参数不能放在必选参数前面）；
 
  定义默认参数要牢记一点：默认参数必须指向不变对象！
@@ -1223,3 +1222,554 @@ if __name__ == '__main__':
 最后，我们执行上面的代码，发现print(D.__mro__)的结果正如上面所计算的结果
 
 最后的最后，python继承顺序遵循C3算法，只要在一个地方找到了所需的内容，就不再继续查找
+
+定制类
+_str__
+我们先定义一个Student类，打印一个实例：
+>>> class Student(object):
+...     def __init__(self, name):
+...         self.name = name
+...
+>>> print(Student('Michael'))
+<__main__.Student object at 0x109afb190>
+打印出一堆<__main__.Student object at 0x109afb190>，不好看。
+怎么才能打印得好看呢？只需要定义好__str__()方法，返回一个好看的字符串就可以了：
+>>> class Student(object):
+...     def __init__(self, name):
+...         self.name = name
+...     def __str__(self):
+...         return 'Student object (name: %s)' % self.name
+...
+>>> print(Student('Michael'))
+Student object (name: Michael)
+这样打印出来的实例，不但好看，而且容易看出实例内部重要的数据。
+但是细心的朋友会发现直接敲变量不用print，打印出来的实例还是不好看：
+>>> s = Student('Michael')
+>>> s
+<__main__.Student object at 0x109afb310>
+这是因为直接显示变量调用的不是__str__()，而是__repr__()，两者的区别是__str__()返回用户看到的字符串，而__repr__()返回程序开发者看到的字符串，也就是说，__repr__()是为调试服务的。
+解决办法是再定义一个__repr__()。但是通常__str__()和__repr__()代码都是一样的，所以，有个偷懒的写法：
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        return 'Student object (name=%s)' % self.name
+    __repr__ = __str__
+__iter__
+如果一个类想被用于for ... in循环，类似list或tuple那样，就必须实现一个__iter__()方法，该方法返回一个迭代对象，然后，Python的for循环就会不断调用该迭代对象的__next__()方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。
+我们以斐波那契数列为例，写一个Fib类，可以作用于for循环：
+class Fib(object):
+    def __init__(self):
+        self.a, self.b = 0, 1 # 初始化两个计数器a，b
+
+    def __iter__(self):
+        return self # 实例本身就是迭代对象，故返回自己
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b # 计算下一个值
+        if self.a > 100000: # 退出循环的条件
+            raise StopIteration()
+        return self.a # 返回下一个值
+现在，试试把Fib实例作用于for循环：
+>>> for n in Fib():
+...     print(n)
+...
+1
+1
+2
+3
+5
+...
+46368
+75025
+__getitem__
+Fib实例虽然能作用于for循环，看起来和list有点像，但是，把它当成list来使用还是不行，比如，取第5个元素：
+>>> Fib()[5]
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+TypeError: 'Fib' object does not support indexing
+要表现得像list那样按照下标取出元素，需要实现__getitem__()方法：
+class Fib(object):
+    def __getitem__(self, n):
+        a, b = 1, 1
+        for x in range(n):
+            a, b = b, a + b
+        return a
+现在，就可以按下标访问数列的任意一项了：
+>>> f = Fib()
+>>> f[0]
+1
+但是list有个神奇的切片方法：
+>>> list(range(100))[5:10]
+[5, 6, 7, 8, 9]
+对于Fib却报错。原因是__getitem__()传入的参数可能是一个int，也可能是一个切片对象slice，所以要做判断：
+class Fib(object):
+    def __getitem__(self, n):
+        if isinstance(n, int): # n是索引
+            a, b = 1, 1
+            for x in range(n):
+                a, b = b, a + b
+            return a
+        if isinstance(n, slice): # n是切片
+            start = n.start
+            stop = n.stop
+            if start is None:
+                start = 0
+            a, b = 1, 1
+            L = []
+            for x in range(stop):
+                if x >= start:
+                    L.append(a)
+                a, b = b, a + b
+            return L
+
+
+__getattr__
+正常情况下，当我们调用类的方法或属性时，如果不存在，就会报错。比如定义Student类：
+class Student(object):
+
+    def __init__(self):
+        self.name = 'Michael'
+调用name属性，没问题，但是，调用不存在的score属性，就有问题了：
+>>> s = Student()
+>>> print(s.name)
+Michael
+>>> print(s.score)
+Traceback (most recent call last):
+  ...
+AttributeError: 'Student' object has no attribute 'score'
+错误信息很清楚地告诉我们，没有找到score这个attribute。
+要避免这个错误，除了可以加上一个score属性外，Python还有另一个机制，那就是写一个__getattr__()方法，动态返回一个属性。修改如下：
+class Student(object):
+
+    def __init__(self):
+        self.name = 'Michael'
+
+    def __getattr__(self, attr):
+        if attr=='score':
+            return 99
+当调用不存在的属性时，比如score，Python解释器会试图调用__getattr__(self, 'score')来尝试获得属性，这样，我们就有机会返回score的值：
+>>> s = Student()
+>>> s.name
+'Michael'
+>>> s.score
+99
+返回函数也是完全可以的：
+class Student(object):
+
+    def __getattr__(self, attr):
+        if attr=='age':
+            return lambda: 25
+只是调用方式要变为：
+>>> s.age()
+25
+注意，只有在没有找到属性的情况下，才调用__getattr__，已有的属性，比如name，不会在__getattr__中查找。
+此外，注意到任意调用如s.abc都会返回None，这是因为我们定义的__getattr__默认返回就是None。要让class只响应特定的几个属性，我们就要按照约定，抛出AttributeError的错误：
+class Student(object):
+
+    def __getattr__(self, attr):
+        if attr=='age':
+            return lambda: 25
+        raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
+这实际上可以把一个类的所有属性和方法调用全部动态化处理了，不需要任何特殊手段。
+__call__
+一个对象实例可以有自己的属性和方法，当我们调用实例方法时，我们用instance.method()来调用。能不能直接在实例本身上调用呢？在Python中，答案是肯定的。
+任何类，只需要定义一个__call__()方法，就可以直接对实例进行调用。请看示例：
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self):
+        print('My name is %s.' % self.name)
+调用方式如下：
+>>> s = Student('Michael')
+>>> s() # self参数不要传入
+My name is Michael.
+__call__()还可以定义参数。对实例进行直接调用就好比对一个函数进行调用一样，所以你完全可以把对象看成函数，把函数看成对象，因为这两者之间本来就没啥根本的区别。
+如果你把对象看成函数，那么函数本身其实也可以在运行期动态创建出来，因为类的实例都是运行期创建出来的，这么一来，我们就模糊了对象和函数的界限。
+那么，怎么判断一个变量是对象还是函数呢？其实，更多的时候，我们需要判断一个对象是否能被调用，能被调用的对象就是一个Callable对象，比如函数和我们上面定义的带有__call__()的类实例：
+>>> callable(Student())
+True
+>>> callable(max)
+True
+>>> callable([1, 2, 3])
+False
+>>> callable(None)
+False
+>>> callable('str')
+False
+通过callable()函数，我们就可以判断一个对象是否是“可调用”对象。
+枚举类：
+
+Python提供了Enum类来实现这个功能：
+from enum import Enum
+
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+枚举的定义
+首先，定义枚举要导入enum模块。
+枚举定义用class关键字，继承Enum类。
+注意:
+定义枚举时，成员名称不允许重复　
+默认情况下，不同的成员值允许相同。但是两个相同值的成员，第二个成员的名称被视作第一个成员的别名　
+如果枚举中存在相同值的成员，在通过值获取枚举成员时，只能获取到第一个成员
+如果要限制定义枚举时，不能定义相同值的成员。可以使用装饰器@unique【要导入unique模块】
+?
+1
+2	for name, member in Month.__members__.items():
+  print(name, '=>', member, ',', member.value)
+如果需要更精确地控制枚举类型，可以从Enum派生出自定义类：
+from enum import Enum, unique
+
+@unique
+class Weekday(Enum):
+    Sun = 0 # Sun的value被设定为0
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+@unique装饰器可以帮助我们检查保证没有重复值。
+访问这些枚举类型可以有若干种方法：
+>>> day1 = Weekday.Mon
+>>> print(day1)
+Weekday.Mon
+>>> print(Weekday.Tue)
+Weekday.Tue
+>>> print(Weekday['Tue'])
+Weekday.Tue
+>>> print(Weekday.Tue.value)
+2
+>>> print(day1 == Weekday.Mon)
+True
+>>> print(Weekday(1))
+Weekday.Mon
+for name, member in Weekday.__members__.items():
+...     print(name, '=>', member)
+...
+Sun => Weekday.Sun
+Mon => Weekday.Mon
+Tue => Weekday.Tue
+Wed => Weekday.Wed
+Thu => Weekday.Thu
+Fri => Weekday.Fri
+Sat => Weekday.Sat
+可见，既可以用成员名称引用枚举常量，又可以直接根据value的值获得枚举常量。
+第一种：
+from enum import Enum
+
+Gender=Enum('Gender',('Male','Female'))
+class Student(object):
+    def __init__(self, name, gender):
+        self.name = name
+        self.gender = gender
+第二种：
+#枚举类
+from enum import Enum,unique
+
+@unique
+class Gender(Enum):
+    Male = 0
+    Female = 1
+class Student(object):
+    def __init__(self, name, gender):
+        self.name = name
+        self.gender = gender
+
+元类：
+type()
+动态语言和静态语言最大的不同，就是函数和类的定义，不是编译时定义的，而是运行时动态创建的。
+比方说我们要定义一个Hello的class，就写一个hello.py模块：
+class Hello(object):
+    def hello(self, name='world'):
+        print('Hello, %s.' % name)
+当Python解释器载入hello模块时，就会依次执行该模块的所有语句，执行结果就是动态创建出一个Hello的class对象，测试如下：
+>>> from hello import Hello
+>>> h = Hello()
+>>> h.hello()
+Hello, world.
+>>> print(type(Hello))
+<class 'type'>
+>>> print(type(h))
+<class 'hello.Hello'>
+type()函数可以查看一个类型或变量的类型，Hello是一个class，它的类型就是type，而h是一个实例，它的类型就是class Hello。
+我们说class的定义是运行时动态创建的，而创建class的方法就是使用type()函数。
+type()函数既可以返回一个对象的类型，又可以创建出新的类型，比如，我们可以通过type()函数创建出Hello类，而无需通过class Hello(object)...的定义：
+>>> def fn(self, name='world'): # 先定义函数
+...     print('Hello, %s.' % name)
+...
+>>> Hello = type('Hello', (object,), dict(hello=fn)) # 创建Hello class
+>>> h = Hello()
+>>> h.hello()
+Hello, world.
+>>> print(type(Hello))
+<class 'type'>
+>>> print(type(h))
+<class '__main__.Hello'>
+要创建一个class对象，type()函数依次传入3个参数：
+1.	class的名称；
+2.	继承的父类集合，注意Python支持多重继承，如果只有一个父类，别忘了tuple的单元素写法；
+3.	class的方法名称与函数绑定，这里我们把函数fn绑定到方法名hello上。
+4.	记录错误
+5.	如果不捕获错误，自然可以让Python解释器来打印出错误堆栈，但程序也被结束了。既然我们能捕获错误，就可以把错误堆栈打印出来，然后分析错误原因，同时，让程序继续执行下去。
+6.	Python内置的logging模块可以非常容易地记录错误信息：
+7.	# err_logging.py
+8.	
+9.	import logging
+10.	
+11.	def foo(s):
+12.	    return 10 / int(s)
+13.	
+14.	def bar(s):
+15.	    return foo(s) * 2
+16.	
+17.	def main():
+18.	    try:
+19.	        bar('0')
+20.	    except Exception as e:
+21.	        logging.exception(e)
+22.	
+23.	main()
+24.	print('END')
+25.	同样是出错，但程序打印完错误信息后会继续执行，并正常退出：
+26.	$ python3 err_logging.py
+27.	ERROR:root:division by zero
+28.	Traceback (most recent call last):
+29.	  File "err_logging.py", line 13, in main
+30.	    bar('0')
+31.	  File "err_logging.py", line 9, in bar
+32.	    return foo(s) * 2
+33.	  File "err_logging.py", line 6, in foo
+34.	    return 10 / int(s)
+35.	ZeroDivisionError: division by zero
+36.	END
+37.	通过配置，logging还可以把错误记录到日志文件里，方便事后排查。
+调试：
+断言
+凡是用print()来辅助查看的地方，都可以用断言（assert）来替代：
+def foo(s):
+    n = int(s)
+    assert n != 0, 'n is zero!'
+    return 10 / n
+
+def main():
+    foo('0')
+assert的意思是，表达式n != 0应该是True，否则，根据程序运行的逻辑，后面的代码肯定会出错。
+如果断言失败，assert语句本身就会抛出AssertionError：
+$ python err.py
+Traceback (most recent call last):
+  ...
+AssertionError: n is zero!
+程序中如果到处充斥着assert，和print()相比也好不到哪去。不过，启动Python解释器时可以用-O参数来关闭assert：
+$ python -O err.py
+Traceback (most recent call last):
+  ...
+ZeroDivisionError: division by zero
+关闭后，你可以把所有的assert语句当成pass来看。
+logging
+把print()替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
+import logging
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
+别急，在import logging之后添加一行配置再试试：
+import logging
+logging.basicConfig(level=logging.INFO)
+看到输出了：
+$ python err.py
+INFO:root:n = 0
+Traceback (most recent call last):
+  File "err.py", line 8, in <module>
+    print(10 / n)
+ZeroDivisionError: division by zero
+这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
+调试
+阅读: 117163
+________________________________________
+程序能一次写完并正常运行的概率很小，基本不超过1%。总会有各种各样的bug需要修正。有的bug很简单，看看错误信息就知道，有的bug很复杂，我们需要知道出错时，哪些变量的值是正确的，哪些变量的值是错误的，因此，需要一整套调试程序的手段来修复bug。
+第一种方法简单直接粗暴有效，就是用print()把可能有问题的变量打印出来看看：
+def foo(s):
+    n = int(s)
+    print('>>> n = %d' % n)
+    return 10 / n
+
+def main():
+    foo('0')
+
+main()
+执行后在输出中查找打印的变量值：
+$ python err.py
+>>> n = 0
+Traceback (most recent call last):
+  ...
+ZeroDivisionError: integer division or modulo by zero
+用print()最大的坏处是将来还得删掉它，想想程序里到处都是print()，运行结果也会包含很多垃圾信息。所以，我们又有第二种方法。
+断言
+凡是用print()来辅助查看的地方，都可以用断言（assert）来替代：
+def foo(s):
+    n = int(s)
+    assert n != 0, 'n is zero!'
+    return 10 / n
+
+def main():
+    foo('0')
+assert的意思是，表达式n != 0应该是True，否则，根据程序运行的逻辑，后面的代码肯定会出错。
+如果断言失败，assert语句本身就会抛出AssertionError：
+$ python err.py
+Traceback (most recent call last):
+  ...
+AssertionError: n is zero!
+程序中如果到处充斥着assert，和print()相比也好不到哪去。不过，启动Python解释器时可以用-O参数来关闭assert：
+$ python -O err.py
+Traceback (most recent call last):
+  ...
+ZeroDivisionError: division by zero
+关闭后，你可以把所有的assert语句当成pass来看。
+logging
+把print()替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
+import logging
+
+s = '0'
+n = int(s)
+logging.info('n = %d' % n)
+print(10 / n)
+logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
+别急，在import logging之后添加一行配置再试试：
+import logging
+logging.basicConfig(level=logging.INFO)
+看到输出了：
+$ python err.py
+INFO:root:n = 0
+Traceback (most recent call last):
+  File "err.py", line 8, in <module>
+    print(10 / n)
+ZeroDivisionError: division by zero
+这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
+logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
+pdb
+第4种方式是启动Python的调试器pdb，让程序以单步方式运行，可以随时查看运行状态。我们先准备好程序：
+# err.py
+s = '0'
+n = int(s)
+print(10 / n)
+然后启动：
+$ python -m pdb err.py
+> /Users/michael/Github/learn-python3/samples/debug/err.py(2)<module>()
+-> s = '0'
+以参数-m pdb启动后，pdb定位到下一步要执行的代码-> s = '0'。输入命令l来查看代码：
+(Pdb) l
+  1     # err.py
+  2  -> s = '0'
+  3     n = int(s)
+  4     print(10 / n)
+输入命令n可以单步执行代码：
+(Pdb) n
+> /Users/michael/Github/learn-python3/samples/debug/err.py(3)<module>()
+-> n = int(s)
+(Pdb) n
+> /Users/michael/Github/learn-python3/samples/debug/err.py(4)<module>()
+-> print(10 / n)
+任何时候都可以输入命令p 变量名来查看变量：
+(Pdb) p s
+'0'
+(Pdb) p n
+0
+输入命令q结束调试，退出程序：
+(Pdb) q
+这种通过pdb在命令行调试的方法理论上是万能的，但实在是太麻烦了，如果有一千行代码，要运行到第999行得敲多少命令啊。还好，我们还有另一种调试方法。
+pdb.set_trace()
+这个方法也是用pdb，但是不需要单步执行，我们只需要import pdb，然后，在可能出错的地方放一个pdb.set_trace()，就可以设置一个断点：
+# err.py
+import pdb
+
+s = '0'
+n = int(s)
+pdb.set_trace() # 运行到这里会自动暂停
+print(10 / n)
+运行代码，程序会自动在pdb.set_trace()暂停并进入pdb调试环境，可以用命令p查看变量，或者用命令c继续运行：
+$ python err.py 
+> /Users/michael/Github/learn-python3/samples/debug/err.py(7)<module>()
+-> print(10 / n)
+(Pdb) p n
+0
+(Pdb) c
+Traceback (most recent call last):
+  File "err.py", line 7, in <module>
+    print(10 / n)
+ZeroDivisionError: division by zero
+IO读写：
+由于文件读写时都有可能产生IOError，一旦出错，后面的f.close()就不会调用。所以，为了保证无论是否出错都能正确地关闭文件，我们可以使用try ... finally来实现：
+try:
+    f = open('/path/to/file', 'r')
+    print(f.read())
+finally:
+    if f:
+        f.close()
+但是每次都这么写实在太繁琐，所以，Python引入了with语句来自动帮我们调用close()方法：
+with open('/path/to/file', 'r') as f:
+    print(f.read())
+调用readline()可以每次读取一行内容，调用readlines()一次读取所有内容并按行返回list
+# StringIO和BytesIO
+
+# stringIO 比如说，这时候，你需要对获取到的数据进行操作，但是你并不想把数据写到本地硬盘上，这时候你就可以用stringIO
+from io import StringIO
+from io import BytesIO
+def outputstring():
+    return 'string \nfrom \noutputstring \nfunction'
+
+s = outputstring()
+
+# 将函数返回的数据在内存中读
+sio = StringIO(s)
+# 可以用StringIO本身的方法
+print(sio.getvalue())
+# 也可以用file-like object的方法
+s = sio.readlines()
+for i in s:
+    print(i.strip())
+
+
+# 将函数返回的数据在内存中写
+sio = StringIO()
+sio.write(s)
+# 可以用StringIO本身的方法查看
+s=sio.getvalue()
+print(s)
+
+# 如果你用file-like object的方法查看的时候，你会发现数据为空
+
+sio = StringIO()
+sio.write(s)
+for i in sio.readlines():
+    print(i.strip())
+
+# 这时候我们需要修改下文件的指针位置
+# 我们发现可以打印出内容了
+sio = StringIO()
+sio.write(s)
+sio.seek(0,0)
+print(sio.tell())
+for i in sio.readlines():
+    print(i.strip())
+
+# 这就涉及到了两个方法seek 和 tell
+# tell 方法获取当前文件读取指针的位置
+# seek 方法，用于移动文件读写指针到指定位置,有两个参数，第一个offset: 偏移量，需要向前或向后的字节数，正为向后，负为向前；第二个whence: 可选值，默认为0，表示文件开头，1表示相对于当前的位置，2表示文件末尾
+# 用seek方法时，需注意，如果你打开的文件没有用'b'的方式打开，则offset无法使用负值哦
+
+
+
+# stringIO 只能操作str，如果要操作二进制数据，就需要用到BytesIO
+# 上面的sio无法用seek从当前位置向前移动，这时候，我们用'b'的方式写入数据，就可以向前移动了
+bio = BytesIO()
+bio.write(s.encode('utf-8'))
+print(bio.getvalue())
+bio.seek(-36,1)
+print(bio.tell())
+for i in bio.readlines():
+    print(i.strip())
+
