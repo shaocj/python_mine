@@ -250,8 +250,26 @@ def calc(*numbers):
 14
 *nums表示把nums这个list的所有元素作为可变参数传进去。这种写法相当有用，而且很常见。
 
- 
 
+ 关键字参数
+
+可变参数允许你传入0个或任意个参数，这些可变参数在函数调用时自动组装为一个tuple。而关键字参数允许你传入0个或任意个含参数名的参数，这些关键字参数在函数内部自动组装为一个dict。请看示例：
+
+def person(name, age, **kw):
+    print('name:', name, 'age:', age, 'other:', kw)
+函数person除了必选参数name和age外，还接受关键字参数kw。在调用该函数时，可以只传入必选参数：
+
+>>> person('Michael', 30)
+name: Michael age: 30 other: {}
+也可以传入任意个数的关键字参数：
+
+>>> person('Bob', 35, city='Beijing')
+name: Bob age: 35 other: {'city': 'Beijing'}
+>>> person('Adam', 45, gender='M', job='Engineer')
+name: Adam age: 45 other: {'gender': 'M', 'job': 'Engineer'}
+>>> extra = {'city': 'Beijing', 'job': 'Engineer'}
+>>> person('Jack', 24, **extra)
+name: Jack age: 24 other: {'city': 'Beijing', 'job': 'Engineer'}
 **extra表示把extra这个dict的所有key-value用关键字参数传入到函数的**kw参数，kw将获得一个dict，注意kw获得的dict是extra的一份拷贝，对kw的改动不会影响到函数外的extra。
 
 命名关键字参数
