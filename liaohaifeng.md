@@ -1165,11 +1165,7 @@ class Student(object):
     def __init__(self,name,score):  
         self.name = name  
         self.score = score  
-[java] view plain copy
-class Student(object):  
-    def __init__(self,name,score):  
-        self.name = name  
-        self.score = score  
+
 这样，我们可以在类外修改Student的实例的成员变量:
 [java] view plain copy
 s1 = Student()  
