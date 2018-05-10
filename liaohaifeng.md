@@ -22,7 +22,9 @@ Python函数在定义的时候，默认参数L的值就被计算出来了，即[
 
 修改上面的例子，我们可以用None这个不变对象来实现：
 
+
 def add_end(L=None):
+
 
     if L is None:
 
