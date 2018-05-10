@@ -468,9 +468,7 @@ b
 默认情况下，dict迭代的是key。如果要迭代value，可以用for value in d.values()，如果要同时迭代key和value，可以用for k, v in d.items()。
 ######
 
-默认情况下，dict迭代的是key。如果要迭代value，可以用for
-value in d.values()，如果要同时迭代key和value，可以用for
-k, v in d.items()。
+
 
 ，如何判断一个对象是可迭代对象呢？方法是通过collections模块的Iterable类型判断：
 
@@ -577,7 +575,6 @@ max:
 
 最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
 
-最难理解的就是generator和函数的执行流程不一样。函数是顺序执行，遇到return语句或者最后一行函数语句就返回。而变成generator的函数，在每次调用next()的时候执行，遇到yield语句返回，再次执行时从上次返回的yield语句处继续执行。
 
 举个简单的例子，定义一个generator，依次返回数字1，3，5：
 
