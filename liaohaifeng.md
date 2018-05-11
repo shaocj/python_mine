@@ -1437,8 +1437,11 @@ class Student(object):
 __iter__
 如果一个类想被用于for ... in循环，类似list或tuple那样，就必须实现一个__iter__()方法，该方法返回一个迭代对象，然后，Python的for循环就会不断调用该迭代对象的__next__()方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。
 我们以斐波那契数列为例，写一个Fib类，可以作用于for循环：
+
 class Fib(object):
+
     def __init__(self):
+    
         self.a, self.b = 0, 1 # 初始化两个计数器a，b
 
     def __iter__(self):
@@ -1578,9 +1581,11 @@ False
 >>> callable('str')
 False
 通过callable()函数，我们就可以判断一个对象是否是“可调用”对象。
+
 枚举类：
 
 Python提供了Enum类来实现这个功能：
+
 from enum import Enum
 
 Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
@@ -1592,7 +1597,7 @@ Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', '
 默认情况下，不同的成员值允许相同。但是两个相同值的成员，第二个成员的名称被视作第一个成员的别名　
 如果枚举中存在相同值的成员，在通过值获取枚举成员时，只能获取到第一个成员
 如果要限制定义枚举时，不能定义相同值的成员。可以使用装饰器@unique【要导入unique模块】
-?
+
 1
 2	for name, member in Month.__members__.items():
   print(name, '=>', member, ',', member.value)
@@ -1880,6 +1885,8 @@ Traceback (most recent call last):
   File "err.py", line 7, in <module>
     print(10 / n)
 ZeroDivisionError: division by zero
+    
+    
 IO读写：
 由于文件读写时都有可能产生IOError，一旦出错，后面的f.close()就不会调用。所以，为了保证无论是否出错都能正确地关闭文件，我们可以使用try ... finally来实现：
 try:
