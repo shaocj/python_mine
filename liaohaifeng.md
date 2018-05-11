@@ -1319,7 +1319,9 @@ python 多重继承之拓扑排序
 二、python 多重继承
 
  #!/usr/bin/env python3
+ 
 # -*- coding: utf-8 -*-
+
 class A(object):
     def foo(self):
         print('A foo')
@@ -1347,6 +1349,7 @@ if __name__ == '__main__':
     d=D()
     d.foo()
     d.bar()
+    
 首先，我们根据上面的继承关系构成一张图，如下
 ![iamge](https://github.com/shaocj/python_mine/blob/master/image/2.png)
 找到入度为0的点，只有一个D，把D拿出来，把D相关的边剪掉
