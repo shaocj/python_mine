@@ -1306,13 +1306,17 @@ python 多重继承之拓扑排序
 每个顶点出现且只出现一次。
 若存在一条从顶点A到顶点B的路径，那么在序列中顶点A出现在顶点B的前面。
 例如，下面这个图：
+
 ![image](https://github.com/shaocj/python_mine/blob/master/image/0.png)
+
 它是一个DAG图，那么如何写出它的拓扑顺序呢？这里说一种比较常用的方法：
 
 从DAG途中选择一个没有前驱(即入度为0)的顶点并输出
 从图中删除该顶点和所有以它为起点的有向边。
 重复1和2直到当前DAG图为空或当前途中不存在无前驱的顶点为止。后一种情况说明有向图中必然存在环。
+
 ![image](https://github.com/shaocj/python_mine/blob/master/image/1.png)
+
 于是，得到拓扑排序后的结果是{1,2,4,3,5}
 
 下面，我们看看拓扑排序在python多重继承中的例子
@@ -1324,12 +1328,15 @@ python 多重继承之拓扑排序
 # -*- coding: utf-8 -*-
 
 class A(object):
+
     def foo(self):
         print('A foo')
     def bar(self):
         print('A bar')
 
+
 class B(object):
+
     def foo(self):
         print('B foo')
     def bar(self):
@@ -1339,13 +1346,16 @@ class C1(A,B):
     pass
 
 class C2(A,B):
+
     def bar(self):
         print('C2-bar')
 
 class D(C1,C2):
+
     pass
 
 if __name__ == '__main__':
+
     print(D.__mro__)
     d=D()
     d.foo()
