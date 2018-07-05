@@ -1362,7 +1362,9 @@ if __name__ == '__main__':
     d.bar()
     
 首先，我们根据上面的继承关系构成一张图，如下
+
 ![iamge](https://github.com/shaocj/python_mine/blob/master/image/2.png)
+
 找到入度为0的点，只有一个D，把D拿出来，把D相关的边剪掉
 现在有两个入度为0的点(C1,C2)，取最左原则，拿C1，剪掉C1相关的边，这时候的排序是{D,C1}
 现在我们看，入度为0的点(C2),拿C2,剪掉C2相关的边，这时候排序是{D,C1,C2}
@@ -1372,37 +1374,48 @@ if __name__ == '__main__':
 我们执行上面的代码，发现print(D.__mro__)的结果也正是这样，而这也就是多重继承所使用的C3算法啦
 
 为了进一步熟悉这个拓扑排序的方法，我们再来一张图，试试看排序结果是怎样的，它继承的内容是否如你所想
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 class A(object):
+
     def foo(self):
         print('A foo')
     def bar(self):
         print('A bar')
 
 class B(object):
+
     def foo(self):
         print('B foo')
     def bar(self):
         print('B bar')
 
 class C1(A):
+
     pass
 
 class C2(B):
+
     def bar(self):
         print('C2-bar')
 
 class D(C1,C2):
+
     pass
 
 if __name__ == '__main__':
+
     print(D.__mro__)
     d=D()
     d.foo()
     d.bar()
 还是先根据继承关系构一个继承图
+
 ![image](https://github.com/shaocj/python_mine/blob/master/image/3.png)
+
+
 找到入度为0的顶点，只有一个D，拿D，剪掉D相关的边
 得到两个入度为0的顶点(C1,C2),根据最左原则，拿C1，剪掉C1相关的边，这时候序列为{D,C1}
 接着看，入度为0的顶点有两个(A,C1),根据最左原则，拿A，剪掉A相关的边，这时候序列为{D,C1,A}
@@ -1414,17 +1427,24 @@ if __name__ == '__main__':
 最后的最后，python继承顺序遵循C3算法，只要在一个地方找到了所需的内容，就不再继续查找
 
 定制类
+
 _str__
+
 我们先定义一个Student类，打印一个实例：
+
 >>> class Student(object):
+
 ...     def __init__(self, name):
 ...         self.name = name
 ...
 >>> print(Student('Michael'))
+
 <__main__.Student object at 0x109afb190>
 打印出一堆<__main__.Student object at 0x109afb190>，不好看。
 怎么才能打印得好看呢？只需要定义好__str__()方法，返回一个好看的字符串就可以了：
+
 >>> class Student(object):
+
 ...     def __init__(self, name):
 ...         self.name = name
 ...     def __str__(self):
@@ -1432,20 +1452,27 @@ _str__
 ...
 >>> print(Student('Michael'))
 Student object (name: Michael)
+
 这样打印出来的实例，不但好看，而且容易看出实例内部重要的数据。
 但是细心的朋友会发现直接敲变量不用print，打印出来的实例还是不好看：
+
 >>> s = Student('Michael')
 >>> s
 <__main__.Student object at 0x109afb310>
+
 这是因为直接显示变量调用的不是__str__()，而是__repr__()，两者的区别是__str__()返回用户看到的字符串，而__repr__()返回程序开发者看到的字符串，也就是说，__repr__()是为调试服务的。
 解决办法是再定义一个__repr__()。但是通常__str__()和__repr__()代码都是一样的，所以，有个偷懒的写法：
+
 class Student(object):
+
     def __init__(self, name):
         self.name = name
     def __str__(self):
-        return 'Student object (name=%s)' % self.name
+        return 'Student object(name=%s)' % self.name
     __repr__ = __str__
+    
 __iter__
+
 如果一个类想被用于for ... in循环，类似list或tuple那样，就必须实现一个__iter__()方法，该方法返回一个迭代对象，然后，Python的for循环就会不断调用该迭代对象的__next__()方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。
 我们以斐波那契数列为例，写一个Fib类，可以作用于for循环：
 
@@ -1463,6 +1490,7 @@ class Fib(object):
         if self.a > 100000: # 退出循环的条件
             raise StopIteration()
         return self.a # 返回下一个值
+        
 现在，试试把Fib实例作用于for循环：
 >>> for n in Fib():
 ...     print(n)
@@ -1475,14 +1503,20 @@ class Fib(object):
 ...
 46368
 75025
+
 __getitem__
+
 Fib实例虽然能作用于for循环，看起来和list有点像，但是，把它当成list来使用还是不行，比如，取第5个元素：
+
 >>> Fib()[5]
+
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 TypeError: 'Fib' object does not support indexing
 要表现得像list那样按照下标取出元素，需要实现__getitem__()方法：
+    
 class Fib(object):
+
     def __getitem__(self, n):
         a, b = 1, 1
         for x in range(n):
@@ -1492,11 +1526,17 @@ class Fib(object):
 >>> f = Fib()
 >>> f[0]
 1
+
 但是list有个神奇的切片方法：
+
 >>> list(range(100))[5:10]
+
 [5, 6, 7, 8, 9]
+
 对于Fib却报错。原因是__getitem__()传入的参数可能是一个int，也可能是一个切片对象slice，所以要做判断：
+
 class Fib(object):
+
     def __getitem__(self, n):
         if isinstance(n, int): # n是索引
             a, b = 1, 1
@@ -1519,20 +1559,26 @@ class Fib(object):
 
 __getattr__
 正常情况下，当我们调用类的方法或属性时，如果不存在，就会报错。比如定义Student类：
+
 class Student(object):
 
     def __init__(self):
         self.name = 'Michael'
+        
 调用name属性，没问题，但是，调用不存在的score属性，就有问题了：
+
 >>> s = Student()
+
 >>> print(s.name)
 Michael
 >>> print(s.score)
 Traceback (most recent call last):
   ...
 AttributeError: 'Student' object has no attribute 'score'
+
 错误信息很清楚地告诉我们，没有找到score这个attribute。
 要避免这个错误，除了可以加上一个score属性外，Python还有另一个机制，那就是写一个__getattr__()方法，动态返回一个属性。修改如下：
+
 class Student(object):
 
     def __init__(self):
@@ -1541,18 +1587,24 @@ class Student(object):
     def __getattr__(self, attr):
         if attr=='score':
             return 99
+            
 当调用不存在的属性时，比如score，Python解释器会试图调用__getattr__(self, 'score')来尝试获得属性，这样，我们就有机会返回score的值：
+
 >>> s = Student()
+
 >>> s.name
 'Michael'
 >>> s.score
 99
+
 返回函数也是完全可以的：
+
 class Student(object):
 
     def __getattr__(self, attr):
         if attr=='age':
             return lambda: 25
+            
 只是调用方式要变为：
 >>> s.age()
 25
@@ -1565,15 +1617,19 @@ class Student(object):
             return lambda: 25
         raise AttributeError('\'Student\' object has no attribute \'%s\'' % attr)
 这实际上可以把一个类的所有属性和方法调用全部动态化处理了，不需要任何特殊手段。
+
 __call__
 一个对象实例可以有自己的属性和方法，当我们调用实例方法时，我们用instance.method()来调用。能不能直接在实例本身上调用呢？在Python中，答案是肯定的。
 任何类，只需要定义一个__call__()方法，就可以直接对实例进行调用。请看示例：
+
 class Student(object):
+
     def __init__(self, name):
         self.name = name
 
     def __call__(self):
         print('My name is %s.' % self.name)
+        
 调用方式如下：
 >>> s = Student('Michael')
 >>> s() # self参数不要传入
@@ -1600,6 +1656,7 @@ Python提供了Enum类来实现这个功能：
 from enum import Enum
 
 Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
 枚举的定义
 首先，定义枚举要导入enum模块。
 枚举定义用class关键字，继承Enum类。
@@ -1625,751 +1682,4 @@ class Weekday(Enum):
     Fri = 5
     Sat = 6
 @unique装饰器可以帮助我们检查保证没有重复值。
-访问这些枚举类型可以有若干种方法：
->>> day1 = Weekday.Mon
->>> print(day1)
-Weekday.Mon
->>> print(Weekday.Tue)
-Weekday.Tue
->>> print(Weekday['Tue'])
-Weekday.Tue
->>> print(Weekday.Tue.value)
-2
->>> print(day1 == Weekday.Mon)
-True
->>> print(Weekday(1))
-Weekday.Mon
-for name, member in Weekday.__members__.items():
-...     print(name, '=>', member)
-...
-Sun => Weekday.Sun
-Mon => Weekday.Mon
-Tue => Weekday.Tue
-Wed => Weekday.Wed
-Thu => Weekday.Thu
-Fri => Weekday.Fri
-Sat => Weekday.Sat
-可见，既可以用成员名称引用枚举常量，又可以直接根据value的值获得枚举常量。
-第一种：
-from enum import Enum
-
-Gender=Enum('Gender',('Male','Female'))
-class Student(object):
-    def __init__(self, name, gender):
-        self.name = name
-        self.gender = gender
-第二种：
-#枚举类
-from enum import Enum,unique
-
-@unique
-class Gender(Enum):
-    Male = 0
-    Female = 1
-class Student(object):
-    def __init__(self, name, gender):
-        self.name = name
-        self.gender = gender
-
-元类：
-type()
-动态语言和静态语言最大的不同，就是函数和类的定义，不是编译时定义的，而是运行时动态创建的。
-比方说我们要定义一个Hello的class，就写一个hello.py模块：
-class Hello(object):
-    def hello(self, name='world'):
-        print('Hello, %s.' % name)
-当Python解释器载入hello模块时，就会依次执行该模块的所有语句，执行结果就是动态创建出一个Hello的class对象，测试如下：
->>> from hello import Hello
->>> h = Hello()
->>> h.hello()
-Hello, world.
->>> print(type(Hello))
-<class 'type'>
->>> print(type(h))
-<class 'hello.Hello'>
-type()函数可以查看一个类型或变量的类型，Hello是一个class，它的类型就是type，而h是一个实例，它的类型就是class Hello。
-我们说class的定义是运行时动态创建的，而创建class的方法就是使用type()函数。
-type()函数既可以返回一个对象的类型，又可以创建出新的类型，比如，我们可以通过type()函数创建出Hello类，而无需通过class Hello(object)...的定义：
->>> def fn(self, name='world'): # 先定义函数
-...     print('Hello, %s.' % name)
-...
->>> Hello = type('Hello', (object,), dict(hello=fn)) # 创建Hello class
->>> h = Hello()
->>> h.hello()
-Hello, world.
->>> print(type(Hello))
-<class 'type'>
->>> print(type(h))
-<class '__main__.Hello'>
-要创建一个class对象，type()函数依次传入3个参数：
-1.	class的名称；
-2.	继承的父类集合，注意Python支持多重继承，如果只有一个父类，别忘了tuple的单元素写法；
-3.	class的方法名称与函数绑定，这里我们把函数fn绑定到方法名hello上。
-4.	记录错误
-5.	如果不捕获错误，自然可以让Python解释器来打印出错误堆栈，但程序也被结束了。既然我们能捕获错误，就可以把错误堆栈打印出来，然后分析错误原因，同时，让程序继续执行下去。
-6.	Python内置的logging模块可以非常容易地记录错误信息：
-7.	# err_logging.py
-8.	
-9.	import logging
-10.	
-11.	def foo(s):
-12.	    return 10 / int(s)
-13.	
-14.	def bar(s):
-15.	    return foo(s) * 2
-16.	
-17.	def main():
-18.	    try:
-19.	        bar('0')
-20.	    except Exception as e:
-21.	        logging.exception(e)
-22.	
-23.	main()
-24.	print('END')
-25.	同样是出错，但程序打印完错误信息后会继续执行，并正常退出：
-26.	$ python3 err_logging.py
-27.	ERROR:root:division by zero
-28.	Traceback (most recent call last):
-29.	  File "err_logging.py", line 13, in main
-30.	    bar('0')
-31.	  File "err_logging.py", line 9, in bar
-32.	    return foo(s) * 2
-33.	  File "err_logging.py", line 6, in foo
-34.	    return 10 / int(s)
-35.	ZeroDivisionError: division by zero
-36.	END
-37.	通过配置，logging还可以把错误记录到日志文件里，方便事后排查。
-调试：
-断言
-凡是用print()来辅助查看的地方，都可以用断言（assert）来替代：
-def foo(s):
-    n = int(s)
-    assert n != 0, 'n is zero!'
-    return 10 / n
-
-def main():
-    foo('0')
-assert的意思是，表达式n != 0应该是True，否则，根据程序运行的逻辑，后面的代码肯定会出错。
-如果断言失败，assert语句本身就会抛出AssertionError：
-$ python err.py
-Traceback (most recent call last):
-  ...
-AssertionError: n is zero!
-程序中如果到处充斥着assert，和print()相比也好不到哪去。不过，启动Python解释器时可以用-O参数来关闭assert：
-$ python -O err.py
-Traceback (most recent call last):
-  ...
-ZeroDivisionError: division by zero
-关闭后，你可以把所有的assert语句当成pass来看。
-logging
-把print()替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
-import logging
-
-s = '0'
-n = int(s)
-logging.info('n = %d' % n)
-print(10 / n)
-logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
-别急，在import logging之后添加一行配置再试试：
-import logging
-logging.basicConfig(level=logging.INFO)
-看到输出了：
-$ python err.py
-INFO:root:n = 0
-Traceback (most recent call last):
-  File "err.py", line 8, in <module>
-    print(10 / n)
-ZeroDivisionError: division by zero
-这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
-logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
-调试
-阅读: 117163
-________________________________________
-程序能一次写完并正常运行的概率很小，基本不超过1%。总会有各种各样的bug需要修正。有的bug很简单，看看错误信息就知道，有的bug很复杂，我们需要知道出错时，哪些变量的值是正确的，哪些变量的值是错误的，因此，需要一整套调试程序的手段来修复bug。
-第一种方法简单直接粗暴有效，就是用print()把可能有问题的变量打印出来看看：
-def foo(s):
-    n = int(s)
-    print('>>> n = %d' % n)
-    return 10 / n
-
-def main():
-    foo('0')
-
-main()
-执行后在输出中查找打印的变量值：
-$ python err.py
->>> n = 0
-Traceback (most recent call last):
-  ...
-ZeroDivisionError: integer division or modulo by zero
-用print()最大的坏处是将来还得删掉它，想想程序里到处都是print()，运行结果也会包含很多垃圾信息。所以，我们又有第二种方法。
-断言
-凡是用print()来辅助查看的地方，都可以用断言（assert）来替代：
-def foo(s):
-    n = int(s)
-    assert n != 0, 'n is zero!'
-    return 10 / n
-
-def main():
-    foo('0')
-assert的意思是，表达式n != 0应该是True，否则，根据程序运行的逻辑，后面的代码肯定会出错。
-如果断言失败，assert语句本身就会抛出AssertionError：
-$ python err.py
-Traceback (most recent call last):
-  ...
-AssertionError: n is zero!
-程序中如果到处充斥着assert，和print()相比也好不到哪去。不过，启动Python解释器时可以用-O参数来关闭assert：
-$ python -O err.py
-Traceback (most recent call last):
-  ...
-ZeroDivisionError: division by zero
-关闭后，你可以把所有的assert语句当成pass来看。
-logging
-把print()替换为logging是第3种方式，和assert比，logging不会抛出错误，而且可以输出到文件：
-import logging
-
-s = '0'
-n = int(s)
-logging.info('n = %d' % n)
-print(10 / n)
-logging.info()就可以输出一段文本。运行，发现除了ZeroDivisionError，没有任何信息。怎么回事？
-别急，在import logging之后添加一行配置再试试：
-import logging
-logging.basicConfig(level=logging.INFO)
-看到输出了：
-$ python err.py
-INFO:root:n = 0
-Traceback (most recent call last):
-  File "err.py", line 8, in <module>
-    print(10 / n)
-ZeroDivisionError: division by zero
-这就是logging的好处，它允许你指定记录信息的级别，有debug，info，warning，error等几个级别，当我们指定level=INFO时，logging.debug就不起作用了。同理，指定level=WARNING后，debug和info就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。
-logging的另一个好处是通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
-pdb
-第4种方式是启动Python的调试器pdb，让程序以单步方式运行，可以随时查看运行状态。我们先准备好程序：
-# err.py
-s = '0'
-n = int(s)
-print(10 / n)
-然后启动：
-$ python -m pdb err.py
-> /Users/michael/Github/learn-python3/samples/debug/err.py(2)<module>()
--> s = '0'
-以参数-m pdb启动后，pdb定位到下一步要执行的代码-> s = '0'。输入命令l来查看代码：
-(Pdb) l
-  1     # err.py
-  2  -> s = '0'
-  3     n = int(s)
-  4     print(10 / n)
-输入命令n可以单步执行代码：
-(Pdb) n
-> /Users/michael/Github/learn-python3/samples/debug/err.py(3)<module>()
--> n = int(s)
-(Pdb) n
-> /Users/michael/Github/learn-python3/samples/debug/err.py(4)<module>()
--> print(10 / n)
-任何时候都可以输入命令p 变量名来查看变量：
-(Pdb) p s
-'0'
-(Pdb) p n
-0
-输入命令q结束调试，退出程序：
-(Pdb) q
-这种通过pdb在命令行调试的方法理论上是万能的，但实在是太麻烦了，如果有一千行代码，要运行到第999行得敲多少命令啊。还好，我们还有另一种调试方法。
-pdb.set_trace()
-这个方法也是用pdb，但是不需要单步执行，我们只需要import pdb，然后，在可能出错的地方放一个pdb.set_trace()，就可以设置一个断点：
-# err.py
-import pdb
-
-s = '0'
-n = int(s)
-pdb.set_trace() # 运行到这里会自动暂停
-print(10 / n)
-运行代码，程序会自动在pdb.set_trace()暂停并进入pdb调试环境，可以用命令p查看变量，或者用命令c继续运行：
-$ python err.py 
-> /Users/michael/Github/learn-python3/samples/debug/err.py(7)<module>()
--> print(10 / n)
-(Pdb) p n
-0
-(Pdb) c
-Traceback (most recent call last):
-  File "err.py", line 7, in <module>
-    print(10 / n)
-ZeroDivisionError: division by zero
-    
-    
-IO读写：
-由于文件读写时都有可能产生IOError，一旦出错，后面的f.close()就不会调用。所以，为了保证无论是否出错都能正确地关闭文件，我们可以使用try ... finally来实现：
-try:
-    f = open('/path/to/file', 'r')
-    print(f.read())
-finally:
-    if f:
-        f.close()
-但是每次都这么写实在太繁琐，所以，Python引入了with语句来自动帮我们调用close()方法：
-with open('/path/to/file', 'r') as f:
-    print(f.read())
-调用readline()可以每次读取一行内容，调用readlines()一次读取所有内容并按行返回list
-# StringIO和BytesIO
-
-# stringIO 比如说，这时候，你需要对获取到的数据进行操作，但是你并不想把数据写到本地硬盘上，这时候你就可以用stringIO
-from io import StringIO
-from io import BytesIO
-def outputstring():
-    return 'string \nfrom \noutputstring \nfunction'
-
-s = outputstring()
-
-# 将函数返回的数据在内存中读
-sio = StringIO(s)
-# 可以用StringIO本身的方法
-print(sio.getvalue())
-# 也可以用file-like object的方法
-s = sio.readlines()
-for i in s:
-    print(i.strip())
-
-
-# 将函数返回的数据在内存中写
-sio = StringIO()
-sio.write(s)
-# 可以用StringIO本身的方法查看
-s=sio.getvalue()
-print(s)
-
-# 如果你用file-like object的方法查看的时候，你会发现数据为空
-
-sio = StringIO()
-sio.write(s)
-for i in sio.readlines():
-    print(i.strip())
-
-# 这时候我们需要修改下文件的指针位置
-# 我们发现可以打印出内容了
-sio = StringIO()
-sio.write(s)
-sio.seek(0,0)
-print(sio.tell())
-for i in sio.readlines():
-    print(i.strip())
-
-# 这就涉及到了两个方法seek 和 tell
-# tell 方法获取当前文件读取指针的位置
-# seek 方法，用于移动文件读写指针到指定位置,有两个参数，第一个offset: 偏移量，需要向前或向后的字节数，正为向后，负为向前；第二个whence: 可选值，默认为0，表示文件开头，1表示相对于当前的位置，2表示文件末尾
-# 用seek方法时，需注意，如果你打开的文件没有用'b'的方式打开，则offset无法使用负值哦
-
-
-
-# stringIO 只能操作str，如果要操作二进制数据，就需要用到BytesIO
-# 上面的sio无法用seek从当前位置向前移动，这时候，我们用'b'的方式写入数据，就可以向前移动了
-bio = BytesIO()
-bio.write(s.encode('utf-8'))
-print(bio.getvalue())
-bio.seek(-36,1)
-print(bio.tell())
-for i in bio.readlines():
-    print(i.strip())
-
-环境变量
-在操作系统中定义的环境变量，全部保存在os.environ这个变量中，可以直接查看：
->>> os.environ
-操作文件和目录
-操作文件和目录的函数一部分放在os模块中，一部分放在os.path模块中，这一点要注意一下。查看、创建和删除目录可以这么调用：
-# 查看当前目录的绝对路径:
->>> os.path.abspath('.')
-'/Users/michael'
-# 在某个目录下创建一个新目录，首先把新目录的完整路径表示出来:
->>> os.path.join('/Users/michael', 'testdir')
-'/Users/michael/testdir'
-# 然后创建一个目录:
->>> os.mkdir('/Users/michael/testdir')
-# 删掉一个目录:
->>> os.rmdir('/Users/michael/testdir')
-操作文件和目录
-操作文件和目录的函数一部分放在os模块中，一部分放在os.path模块中，这一点要注意一下。查看、创建和删除目录可以这么调用：
-# 查看当前目录的绝对路径:
->>> os.path.abspath('.')
-'/Users/michael'
-# 在某个目录下创建一个新目录，首先把新目录的完整路径表示出来:
->>> os.path.join('/Users/michael', 'testdir')
-'/Users/michael/testdir'
-# 然后创建一个目录:
->>> os.mkdir('/Users/michael/testdir')
-# 删掉一个目录:
->>> os.rmdir('/Users/michael/testdir')
-把两个路径合成一个时，不要直接拼字符串，而要通过os.path.join()函数，这样可以正确处理不同操作系统的路径分隔符。在Linux/Unix/Mac下，os.path.join()返回这样的字符串：
-part-1/part-2
-同样的道理，要拆分路径时，也不要直接去拆字符串，而要通过os.path.split()函数，这样可以把一个路径拆分为两部分，后一部分总是最后级别的目录或文件名：
->>> os.path.split('/Users/michael/testdir/file.txt')
-('/Users/michael/testdir', 'file.txt')
-os.path.splitext()可以直接让你得到文件扩展名，很多时候非常方便：
->>> os.path.splitext('/path/to/file.txt')
-('/path/to/file', '.txt')
-这些合并、拆分路径的函数并不要求目录和文件要真实存在，它们只对字符串进行操作。
-
-multiprocessing模块就是跨平台版本的多进程模块。
-multiprocessing模块提供了一个Process类来代表一个进程对象，下面的例子演示了启动一个子进程并等待其结束：
-from multiprocessing import Process
-import os
-
-# 子进程要执行的代码
-def run_proc(name):
-    print('Run child process %s (%s)...' % (name, os.getpid()))
-
-if __name__=='__main__':
-    print('Parent process %s.' % os.getpid())
-    p = Process(target=run_proc, args=('test',))
-    print('Child process will start.')
-    p.start()
-    p.join()
-    print('Child process end.')
-执行结果如下：
-Parent process 928.
-Process will start.
-Run child process test (929)...
-Process end.
-创建子进程时，只需要传入一个执行函数和函数的参数，创建一个Process实例，用start()方法启动，这样创建进程比fork()还要简单。
-join()方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。
-subprocess模块可以让我们非常方便地启动一个子进程，然后控制其输入和输出。
-下面的例子演示了如何在Python代码中运行命令nslookup www.python.org，这和命令行直接运行的效果是一样的：
-import subprocess
-
-print('$ nslookup www.python.org')
-r = subprocess.call(['nslookup', 'www.python.org'])
-print('Exit code:', r)
-父进程所有Python对象都必须通过pickle序列化再传到子进程去，
-Python的标准库提供了两个模块：_thread和threading，_thread是低级模块，threading是高级模块，对_thread进行了封装。绝大多数情况下，我们只需要使用threading这个高级模块。
-启动一个线程就是把一个函数传入并创建Thread实例，然后调用start()开始执行：
-import time, threading
-
-# 新线程执行的代码:
-def loop():
-    print('thread %s is running...' % threading.current_thread().name)
-    n = 0
-    while n < 5:
-        n = n + 1
-        print('thread %s >>> %s' % (threading.current_thread().name, n))
-        time.sleep(1)
-    print('thread %s ended.' % threading.current_thread().name)
-
-print('thread %s is running...' % threading.current_thread().name)
-t = threading.Thread(target=loop, name='LoopThread')
-t.start()
-t.join()
-print('thread %s ended.' % threading.current_thread().name)
-多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中，互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改，因此，线程之间共享数据最大的危险在于多个线程同时改一个变量，把内容给改乱了。。创建一个锁就是通过threading.Lock()来实现：
-balance = 0
-lock = threading.Lock()
-
-def run_thread(n):
-    for i in range(100000):
-        # 先要获取锁:
-        lock.acquire()
-        try:
-            # 放心地改吧:
-            change_it(n)
-        finally:
-            # 改完了一定要释放锁:
-            lock.release()
-ThreadLocal应运而生，不用查找dict，ThreadLocal帮你自动做这件事：
-import threading
-
-# 创建全局ThreadLocal对象:
-local_school = threading.local()
-
-def process_student():
-    # 获取当前线程关联的student:
-    std = local_school.student
-    print('Hello, %s (in %s)' % (std, threading.current_thread().name))
-
-def process_thread(name):
-    # 绑定ThreadLocal的student:
-    local_school.student = name
-    process_student()
-
-t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
-t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
-t1.start()
-t2.start()
-t1.join()
-t2.join()
-执行结果：
-Hello, Alice (in Thread-A)
-Hello, Bob (in Thread-B)
-全局变量local_school就是一个ThreadLocal对象，每个Thread对它都可以读写student属性，但互不影响。你可以把local_school看成全局变量，但每个属性如local_school.student都是线程的局部变量，可以任意读写而互不干扰，也不用管理锁的问题，ThreadLocal内部会处理。
-可以理解为全局变量local_school是一个dict，不但可以用local_school.student，还可以绑定其他变量，如local_school.teacher等等。
-ThreadLocal最常用的地方就是为每个线程绑定一个数据库连接，HTTP请求，用户身份信息等，这样一个线程的所有调用到的处理函数都可以非常方便地访问这些资源。
-分布式进程
-通过managers模块把Queue通过网络暴露出去，就可以让其他机器的进程访问Queue了。
-我们先看服务进程，服务进程负责启动Queue，把Queue注册到网络上，然后往Queue里面写入任务：
-# task_master.py
-
-import random, time, queue
-from multiprocessing.managers import BaseManager
-
-# 发送任务的队列:
-task_queue = queue.Queue()
-# 接收结果的队列:
-result_queue = queue.Queue()
-
-# 从BaseManager继承的QueueManager:
-class QueueManager(BaseManager):
-    pass
-
-# 把两个Queue都注册到网络上, callable参数关联了Queue对象:
-QueueManager.register('get_task_queue', callable=lambda: task_queue)
-QueueManager.register('get_result_queue', callable=lambda: result_queue)
-# 绑定端口5000, 设置验证码'abc':
-manager = QueueManager(address=('', 5000), authkey=b'abc')
-# 启动Queue:
-manager.start()
-# 获得通过网络访问的Queue对象:
-task = manager.get_task_queue()
-result = manager.get_result_queue()
-# 放几个任务进去:
-for i in range(10):
-    n = random.randint(0, 10000)
-    print('Put task %d...' % n)
-    task.put(n)
-# 从result队列读取结果:
-print('Try get results...')
-for i in range(10):
-    r = result.get(timeout=10)
-    print('Result: %s' % r)
-# 关闭:
-manager.shutdown()
-print('master exit.')
-请注意，当我们在一台机器上写多进程程序时，创建的Queue可以直接拿来用，但是，在分布式多进程环境下，添加任务到Queue不可以直接对原始的task_queue进行操作，那样就绕过了QueueManager的封装，必须通过manager.get_task_queue()获得的Queue接口添加。
-然后，在另一台机器上启动任务进程（本机上启动也可以）：
-# task_worker.py
-
-import time, sys, queue
-from multiprocessing.managers import BaseManager
-
-# 创建类似的QueueManager:
-class QueueManager(BaseManager):
-    pass
-
-# 由于这个QueueManager只从网络上获取Queue，所以注册时只提供名字:
-QueueManager.register('get_task_queue')
-QueueManager.register('get_result_queue')
-
-# 连接到服务器，也就是运行task_master.py的机器:
-server_addr = '127.0.0.1'
-print('Connect to server %s...' % server_addr)
-# 端口和验证码注意保持与task_master.py设置的完全一致:
-m = QueueManager(address=(server_addr, 5000), authkey=b'abc')
-# 从网络连接:
-m.connect()
-# 获取Queue的对象:
-task = m.get_task_queue()
-result = m.get_result_queue()
-# 从task队列取任务,并把结果写入result队列:
-for i in range(10):
-    try:
-        n = task.get(timeout=1)
-        print('run task %d * %d...' % (n, n))
-        r = '%d * %d = %d' % (n, n, n*n)
-        time.sleep(1)
-        result.put(r)
-    except Queue.Empty:
-        print('task queue is empty.')
-# 处理结束:
-print('worker exit.')
-任务进程要通过网络连接到服务进程，所以要指定服务进程的IP。
-现在，可以试试分布式进程的工作效果了。先启动task_master.py服务进程：
-$ python3 task_master.py 
-Put task 3411...
-Put task 1605...
-Put task 1398...
-Put task 4729...
-Put task 5300...
-Put task 7471...
-Put task 68...
-Put task 4219...
-Put task 339...
-Put task 7866...
-Try get results...
-task_master.py进程发送完任务后，开始等待result队列的结果。现在启动task_worker.py进程：
-$ python3 task_worker.py
-Connect to server 127.0.0.1...
-run task 3411 * 3411...
-run task 1605 * 1605...
-run task 1398 * 1398...
-run task 4729 * 4729...
-run task 5300 * 5300...
-run task 7471 * 7471...
-run task 68 * 68...
-run task 4219 * 4219...
-run task 339 * 339...
-run task 7866 * 7866...
-worker exit.
-task_worker.py进程结束，在task_master.py进程中会继续打印出结果：
-Result: 3411 * 3411 = 11634921
-Result: 1605 * 1605 = 2576025
-Result: 1398 * 1398 = 1954404
-Result: 4729 * 4729 = 22363441
-Result: 5300 * 5300 = 28090000
-Result: 7471 * 7471 = 55815841
-Result: 68 * 68 = 4624
-Result: 4219 * 4219 = 17799961
-Result: 339 * 339 = 114921
-Result: 7866 * 7866 = 61873956
-这个简单的Master/Worker模型有什么用？其实这就是一个简单但真正的分布式计算，把代码稍加改造，启动多个worker，就可以把任务分布到几台甚至几十台机器上，比如把计算n*n的代码换成发送邮件，就实现了邮件队列的异步发送。
-Queue对象存储在哪？注意到task_worker.py中根本没有创建Queue的代码，所以，Queue对象存储在task_master.py进程中：
-而Queue之所以能通过网络访问，就是通过QueueManager实现的。由于QueueManager管理的不止一个Queue，所以，要给每个Queue的网络调用接口起个名字，比如get_task_queue。
-authkey有什么用？这是为了保证两台机器正常通信，不被其他机器恶意干扰。如果task_worker.py的authkey和task_master.py的authkey不一致，肯定连接不上。
-正则表达式
-用\d可以匹配一个数字，\w可以匹配一个字母或数字，.可以匹配任意字符，要匹配变长的字符，在正则表达式中，用*表示任意个字符（包括0个），用+表示至少一个字符，用?表示0个或1个字符，用{n}表示n个字符，用{n,m}表示n-m个字符：\s可以匹配一个空格。^表示行的开头，^\d表示必须以数字开头。$表示行的结束，\d$表示必须以数字结束。\w匹配字母数字，\W匹配非字母数字
-s = 'ABC\\-001' # Python的字符串
-因此我们强烈建议使用Python的r前缀，就不用考虑转义的问题了：
-s = r'ABC\-001' # Python的字符串
-# 对应的正则表达式字符串不变：
-# 'ABC\-001'
-re.split
-可以使用re.split来分割字符串，如：re.split(r’\s+’, text)；将字符串按空格分割成一个单词列表。
-原型： 
-re.split(pattern, string, maxsplit=0)
-通过正则表达式将字符串分离。如果用括号将正则表达式括起来，那么匹配的字符串也会被列入到list中返回。maxsplit是分离的次数，maxsplit=1分离一次，默认为0，不限制次数。
-例如：
-re.split(‘\W+’, ‘Words, words, words.’) 
-[‘Words’, ‘words’, ‘words’, ”]
-如果字符串不能匹配，将会返回整个字符串的list。
-re.split(“a”,”bbb”) 
-[‘bbb’]
-re.match函数
-re.match 尝试从字符串的起始位置匹配一个模式，如果不是起始位置匹配成功的话，match()就返回none。
-re.search 扫描整个字符串并返回第一个成功的匹配。
-import re
-print(re.match('www', 'www.runoob.com').span())  # 在起始位置匹配
-print(re.match('com', 'www.runoob.com'))         # 不在起始位置匹配
-以上实例运行输出结果为：
-(0, 3)
-None
-import re
-print(re.search('www', 'www.runoob.com').span())  # 在起始位置匹配
-print(re.search('com', 'www.runoob.com').span())         # 不在起始位置匹配
-以上实例运行输出结果为：
-(0, 3)
-(11, 14)
-re.compile
-　　可以把正则表达式编译成一个正则表达式对象。可以把那些经常使用的正则表达式编译成正则表达式对象，这样可以提高一定的效率。
-re.findall
-re.findall可以获取字符串中所有匹配的字符串。如：re.findall(r'\w*oo\w*', text)；获取字符串中，包含'oo'的所有单词。
-
-re.split('\W+', 'Words, words, words.')
-['Words', 'words', 'words', '']
-re.split('(\W+)', 'Words, words, words.')
-['Words', ', ', 'words', ', ', 'words', '.', '']
-•	如果没有加小括号，则返回结果就是用正则表达式匹配的groups；
-•	如果加了小括号，会返回所有的groups，包括不匹配的groups也会包括在返回结果中。
-•	分组
-•	除了简单地判断是否匹配之外，正则表达式还有提取子串的强大功能。用()表示的就是要提取的分组（Group）。比如：
-•	^(\d{3})-(\d{3,8})$分别定义了两个组，可以直接从匹配的字符串中提取出区号和本地号码：
-•	>>> m = re.match(r'^(\d{3})-(\d{3,8})$', '010-12345')
-•	>>> m
-•	<_sre.SRE_Match object; span=(0, 9), match='010-12345'>
-•	>>> m.group(0)
-•	'010-12345'
-•	>>> m.group(1)
-•	'010'
-•	>>> m.group(2)
-•	'12345'
-•	如果正则表达式中定义了组，就可以在Match对象上用group()方法提取出子串来。
-•	注意到group(0)永远是原始字符串，group(1)、group(2)……表示第1、2、……个子串。
-•	贪婪匹配
-•	最后需要特别指出的是，正则匹配默认是贪婪匹配，也就是匹配尽可能多的字符。举例如下，匹配出数字后面的0：
-•	>>> re.match(r'^(\d+)(0*)$', '102300').groups()
-•	('102300', '')
-•	由于\d+采用贪婪匹配，直接把后面的0全部匹配了，结果0*只能匹配空字符串了。
-•	必须让\d+采用非贪婪匹配（也就是尽可能少匹配），才能把后面的0匹配出来，加个?就可以让\d+采用非贪婪匹配：
-•	>>> re.match(r'^(\d+?)(0*)$', '102300').groups()
-•	('1023', '00')
-常用内建模块：
-datetime是Python处理日期和时间的标准库
-from datetime import datetime
-注意到datetime是模块，datetime模块还包含一个datetime类，通过from datetime import datetime导入的才是datetime这个类。
-如果仅导入import datetime，则必须引用全名datetime.datetime
-把一个datetime类型转换为timestamp只需要简单调用timestamp()方法：
-要把timestamp转换为datetime，使用datetime提供的fromtimestamp()方法
-首先必须把str转换为datetime。转换方法是通过datetime.strptime()实现，需要一个日期和时间的格式化字符串。如果已经有了datetime对象，要把它格式化为字符串显示给用户，就需要转换为str，转换方法是通过strftime()实现的，同样需要一个日期和时间的格式
-datetime加减
-对日期和时间进行加减实际上就是把datetime往后或往前计算，得到新的datetime。加减可以直接用+和-运算符，不过需要导入timedelta这个类：
->>> from datetime import datetime, timedelta
->>> now = datetime.now()
->>> now
-datetime.datetime(2015, 5, 18, 16, 57, 3, 540997)
->>> now + timedelta(hours=10)
-collections是Python内建的一个集合模块，提供了许多有用的集合类。namedtuple
->>> from collections import namedtuple
->>> Point = namedtuple('Point', ['x', 'y'])
->>> p = Point(1, 2)
->>> p.x
-1
->>> p.y
-2
-namedtuple是一个函数，它用来创建一个自定义的tuple对象，并且规定了tuple元素的个数，并可以用属性而不是索引来引用tuple的某个元素。
-collections
-阅读: 90196
-________________________________________
-collections是Python内建的一个集合模块，提供了许多有用的集合类。
-namedtuple
-我们知道tuple可以表示不变集合，例如，一个点的二维坐标就可以表示成：
->>> p = (1, 2)
-但是，看到(1, 2)，很难看出这个tuple是用来表示一个坐标的。
-定义一个class又小题大做了，这时，namedtuple就派上了用场：
->>> from collections import namedtuple
->>> Point = namedtuple('Point', ['x', 'y'])
->>> p = Point(1, 2)
->>> p.x
-1
->>> p.y
-2
-namedtuple是一个函数，它用来创建一个自定义的tuple对象，并且规定了tuple元素的个数，并可以用属性而不是索引来引用tuple的某个元素。
-这样一来，我们用namedtuple可以很方便地定义一种数据类型，它具备tuple的不变性，又可以根据属性来引用，使用十分方便。
-可以验证创建的Point对象是tuple的一种子类：
->>> isinstance(p, Point)
-True
->>> isinstance(p, tuple)
-True
-类似的，如果要用坐标和半径表示一个圆，也可以用namedtuple定义：
-# namedtuple('名称', [属性list]):
-Circle = namedtuple('Circle', ['x', 'y', 'r'])
-deque
-使用list存储数据时，按索引访问元素很快，但是插入和删除元素就很慢了，因为list是线性存储，数据量大的时候，插入和删除效率很低。
-deque是为了高效实现插入和删除操作的双向列表，适合用于队列和栈：
->>> from collections import deque
->>> q = deque(['a', 'b', 'c'])
->>> q.append('x')
->>> q.appendleft('y')
->>> q
-deque(['y', 'a', 'b', 'c', 'x'])
-deque除了实现list的append()和pop()外，还支持appendleft()和popleft()，这样就可以非常高效地往头部添加或删除元素
-defaultdict
-使用dict时，如果引用的Key不存在，就会抛出KeyError。如果希望key不存在时，返回一个默认值，就可以用defaultdict：
->>> from collections import defaultdict
->>> dd = defaultdict(lambda: 'N/A')
->>> dd['key1'] = 'abc'
->>> dd['key1'] # key1存在
-'abc'
->>> dd['key2'] # key2不存在，返回默认值
-'N/A'
-注意默认值是调用函数返回的，而函数在创建defaultdict对象时传入。
-除了在Key不存在时返回默认值，defaultdict的其他行为跟dict是完全一样的
-OrderedDict
-使用dict时，Key是无序的。在对dict做迭代时，我们无法确定Key的顺序。
-如果要保持Key的顺序，可以用OrderedDict：注意，OrderedDict的Key会按照插入的顺序排列，不是Key本身排序：
-Counter
-Counter是一个简单的计数器，例如，统计字符出现的个数：
->>> from collections import Counter
->>> c = Counter()
->>> for ch in 'programming':
-...     c[ch] = c[ch] + 1
-...
->>> c
-Counter({'g': 2, 'm': 2, 'r': 2, 'a': 1, 'i': 1, 'o': 1, 'n': 1, 'p': 1})
-Counter实际上也是dict的一个子类，上面的结果可以看出，字符'g'、'm'、'r'各出现了两次，其他字符各出现了一次
-
-
-
-
+访问这些枚举类型
