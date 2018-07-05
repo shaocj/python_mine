@@ -540,13 +540,11 @@ def fib(max):
     n, a, b = 0, 0,
 1
 
-    while n <
-max:
+    while n <max:
 
         print(b)
 
-        a, b = b, a
-+ b
+        a, b = b, a+ b
 
         n = n + 1
 
@@ -561,13 +559,11 @@ def fib(max):
     n, a, b = 0, 0,
 1
 
-    while n <
-max:
+    while n <max:
 
         yield b
 
-        a, b = b, a
-+ b
+        a, b = b, a+ b
 
         n = n + 1
 
@@ -622,17 +618,13 @@ step 3
 
 ...     try:
 
-...         x =
-next(g)
+...         x =next(g)
 
-...         print('g:',
-x)
+...         print('g:',x)
 
-...     except StopIteration
-as e:
+...     except StopIterationas e:
 
-...         print('Generator
-return value:', e.value)
+...         print('Generatorreturn value:', e.value)
 
 ...         break
 
@@ -654,21 +646,20 @@ Generator return value: done
 
 #将杨辉三角的每一行看成一个list,写一个生成器（generator）,不断输出下一行list
 
-def triangles(): 
+def triangles():
 
-ret = [1]
+    N=[1]
+    
+    while True:
+    
+        yield N
+        
+        N.append(0)
+        
+        N=[N[i-1] + N[i] for i in range(len(N))]
 
- while len(ret)-1 < 10:
 
- yield ret 
-
-ret = [ ret[i] + ret[i+1] for i in range(len(ret)-1)] 
-
-ret.insert(0,1) 
-
-ret.append(1)
-
-n = 0
+ n = 0
 
 results = []
 
@@ -677,7 +668,7 @@ for t in triangles():
     print(t)
 
    
-results.append(t)
+    results.append(t)
 
     n = n + 1
 
@@ -693,26 +684,19 @@ if results == [
 
     [1, 2, 1],
 
-    [1, 3, 3,
-1],
+    [1, 3, 3,1],
 
-    [1, 4, 6, 4,
-1],
+    [1, 4, 6, 4,1],
 
-    [1, 5, 10,
-10, 5, 1],
+    [1, 5, 10,10, 5, 1],
 
-    [1, 6, 15,
-20, 15, 6, 1],
+    [1, 6, 15,20, 15, 6, 1],
 
-    [1, 7, 21,
-35, 35, 21, 7, 1],
+    [1, 7, 21,35, 35, 21, 7, 1],
 
-    [1, 8, 28,
-56, 70, 56, 28, 8, 1],
+    [1, 8, 28,56, 70, 56, 28, 8, 1],
 
-    [1, 9, 36,
-84, 126, 126, 84, 36, 9, 1]
+    [1, 9, 36,84, 126, 126, 84, 36, 9, 1]
 
 ]:
 
@@ -800,11 +784,9 @@ while True:
 
         # 获得下一个值:
 
-        x =
-next(it)
+        x =next(it)
 
-    except
-StopIteration:
+    except StopIteration:
 
         # 遇到StopIteration就退出循环
 
@@ -822,8 +804,7 @@ map()函数接收两个参数，一个是函数，一个是Iterable，map将传�
 
 >>> def f(x):
 
-...     return x *
-x
+...     return x *x
 
 ...
 
@@ -839,18 +820,15 @@ x
 
 >>> def fn(x, y):
 
-...     return x * 10
-+ y
+...     return x * 10+ y
 
 ...
 
 >>> def char2num(s):
 
-...     digits = {'0':
-0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+...     digits = {'0':0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
 
-...     return
-digits[s]
+...     return digits[s]
 
 ...
 
@@ -864,15 +842,13 @@ filter()也接收一个函数和一个序列。和map()不同的是，filter()�
 
 def is_odd(n):
 
-    return n % 2 ==
-1
+    return n % 2 ==1
 
  
 
 list(filter(is_odd, [1, 2, 4, 5, 6, 9, 10, 15]))
 
-# 结果: [1, 5, 9,
-15]
+# 结果: [1, 5, 9,15]
 
  
 
@@ -939,6 +915,7 @@ before myfunc() called.
 内嵌包装函数的形参和返回值与原函数相同，装饰函数返回内嵌包装函数对象'''
 
 def deco(func):
+
     def _deco():
         print("before myfunc() called.")
         func()
@@ -946,18 +923,23 @@ def deco(func):
         # 不需要返回func，实际上应返回原函数的返回值
     return _deco
 @deco
+
 def myfunc():
+
     print(" myfunc() called.")
     return 'ok'
 myfunc()
+
 myfunc()
 输出：
+
 before myfunc() called.
  myfunc() called.
   after myfunc() called.
 before myfunc() called.
  myfunc() called.
   after myfunc() called.
+  
 这里其实不需要我解释了，还是按照第一步中的方法做替换就可以了。还是啰嗦几句吧。。 
 @deco 替换为 myfunc = deco(myfunc) 
 程序首先调用deco(myfunc)，得到的返回结果赋值给了myfunc ，这样myfunc 就变成了指向函数_deco()的指针 
@@ -967,6 +949,7 @@ before myfunc() called.
 # -*- coding:gbk -*-
 '''示例5: 对带参数的函数进行装饰，
 内嵌包装函数的形参和返回值与原函数相同，装饰函数返回内嵌包装函数对象'''
+
 def deco(func):
     def _deco(a, b):
         print("before myfunc() called.")
@@ -980,12 +963,14 @@ def myfunc(a, b):
     return a + b
 myfunc(1, 2)
 myfunc(3, 4)
+
 输出：before myfunc() called.
  myfunc(1,2) called.
   after myfunc() called. result: 3
 before myfunc() called.
  myfunc(3,4) called.
   after myfunc() called. result:
+  
 第四步 ：让装饰器带参数
 # -*- coding:gbk -*-
 '''示例7: 在示例4的基础上，让装饰器带参数，
@@ -1089,6 +1074,7 @@ True
 # 首先你有一个command.py文件，内容如下，这里我们假若它后面还有100个方法
 
 class MyObject(object):
+
     def __init__(self):
         self.x = 9
     def add(self):
@@ -1103,6 +1089,7 @@ class MyObject(object):
     def div(self):
         return self.x / self.x
 # 然后我们有一个入口文件 exec.py，要根据用户的输入来执行后端的操作
+
 from command import MyObject
 computer=MyObject()
 
@@ -1120,24 +1107,33 @@ def run():
     else:
         print('404')
 上面使用了if来进行判断，那么假若我的command里面真的有100个方法，那我总不可能写100次判断吧，所以这里我们就会用到python的反射特性，看下面的代码
+
 from command import MyObject
 
 computer=MyObject()
+
 def run(x):
+
     inp = input('method>')
+    
     # 判断是否有这个属性
+    
     if hasattr(computer,inp):
+    
     # 有就获取然后赋值给新的变量
+    
         func = getattr(computer,inp)
         print(func())
     else:
     # 没有我们来set一个
+    
         setattr(computer,inp,lambda x:x+1)
         func = getattr(computer,inp)
         print(func(x))
 
 if __name__ == '__main__':
     run(10)
+    
 使用__slots__
 但是，如果我们想要限制实例的属性怎么办？比如，只允许对Student实例添加name和age属性。
 为了达到限制的目的，Python允许在定义class的时候，定义一个特殊的__slots__变量，来限制该class实例能添加的属性：
@@ -1160,7 +1156,7 @@ AttributeError: 'Student' object has no attribute 'score'
 下面一步一步地介绍。
 
 定义类Student，拥有变量名name和score
-[java] view plain copy
+
 class Student(object):  
     def __init__(self,name,score):  
         self.name = name  
@@ -1176,7 +1172,7 @@ s1.score = 9999 # 这里的定义是不合理的
 
 我们可以定义相应的set和get成员函数来访问成员变量score，并且进行参数检查。如下所示：
 
-[java] view plain copy
+
 class Student(object):  
     def __init__(self,name,score):  
         self.name = name  
@@ -1189,11 +1185,12 @@ class Student(object):
         if score < 0 or score > 100:  
             raise ValueError(”score must be between [0,100]!!!”)  
         self._score = score  
+        
 上述代码定义了score成员的set和get函数。（可能实际应用时，修改分数比较常见）
 
 现在，我们改变参数的代码是这样的：
 
-[java] view plain copy
+
 s1 = Student()  
 s1.set_score(9999) #这里会抛出异常  
 上述的第二种方式实现了set函数的参数检查，但是修改score的代码从简单的 s1.score = 90 变成了 s1.set_score(90) .我们怎么样才能做到既检验输入的参数又使得修改score的代码不变呢？
@@ -1204,7 +1201,7 @@ s1.set_score(9999) #这里会抛出异常
 
 于是有了下面的代码：
 
-[java] view plain copy
+
 class Student(object):  
     def __init__(self,name,score):  
         self._name = name  
@@ -1228,8 +1225,13 @@ s1.name = ”Luly”
 s1.score = 100  
 关于上述代码的说明：
 
-可能你已经发现了，我的成员变量改成了_name 与 _score，这里首先是为了增加可读性，这两个变量是私有的。其次的原因见下面的误区分析。
-上述代码中的 s1.name = “Luly” 行会出现编译错误 AttributeError: can’t set attribute ,也就是说这里不能直接这样改变，这是为什么呢？可以看到，在代码中，我并没有提供名称为name的set函数， 这里值得注意的是，s1._name = “Lucy” 是可以运行通过的。但是我们之前说过了，假设用户足够自觉，不会去操作 _xxx 或者 __xxx这样的变量名。
+可能你已经发现了，我的成员变量改成了_name 与 _score，
+
+这里首先是为了增加可读性，这两个变量是私有的。其次的原因见下面的误区分析。
+上述代码中的 s1.name = “Luly” 行会出现编译错误 AttributeError: can’t set attribute ,也就是说这里不能直接这样改变，这是为什么呢？可以看到，在代码中，我并没有提供名称为name的set函数， 这里值得注意的是，s1._name = “Lucy” 
+
+是可以运行通过的。但是我们之前说过了，假设用户足够自觉，不会去操作 _xxx 或者 __xxx这样的变量名。
+
 按照上述代码的初衷，也就是说name是类的只读的属性。score是可修改的。
 关于@property 修饰的函数 score 就是个简单的get函数，该函数不需要任何参数（self不需要传入值），因此我们可以这样来调用这个函数 ,即 s1.score 即可。（这就是Property的用处，将函数调用转化为属性访问），相当于给score加了一层包裹。
 关于@score.setter 便是针对与 score函数包裹的成员变量的的set函数。当我们需要修改_score的值时，使用score函数，但是就像score是类的成员属性一样使用，例如上面的： s1.score = 100，实际上等价于 s1.score(100).
@@ -1259,15 +1261,14 @@ class Student(object):
 s1 = Student(”Lily”, 90)  
 s1.name = ”Luly”  
 s1.AA = 100 # 这里相当于是 s1.AA(100)  
-好了，关于@Property的概念与用法就讲完了。本质上是定义了新的函数，该函数们执行set与get的功能，并且有@Property的包裹。并且将这些定
-义的函数当作属性一样来赋值。
+好了，关于@Property的概念与用法就讲完了。本质上是定义了新的函数，该函数们执行set与get的功能，并且有@Property的包裹。并且将这些定义的函数当作属性一样来赋值。
 
 可能存在的陷阱：
 
 下面的代码是个大的陷阱，因为现在的函数已经不再是单纯的函数，而是可以直接用 = 来调用，例如上面的 score函数 的调用竟然是 s1.score = 100 .这样就
 会出现下面的问题：
 
-[java] view plain copy
+
 class Student(object):   
     def __init__(self,name,score):         
         self.name = name      
