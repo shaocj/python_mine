@@ -1670,6 +1670,7 @@ Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', '
 2	for name, member in Month.__members__.items():
   print(name, '=>', member, ',', member.value)
 如果需要更精确地控制枚举类型，可以从Enum派生出自定义类：
+
 from enum import Enum, unique
 
 @unique
@@ -1681,5 +1682,6 @@ class Weekday(Enum):
     Thu = 4
     Fri = 5
     Sat = 6
+    
 @unique装饰器可以帮助我们检查保证没有重复值。
 访问这些枚举类型
