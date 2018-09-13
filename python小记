@@ -1,0 +1,16 @@
+1、Python divmod() 函数
+  python divmod() 函数把除数和余数运算结果结合起来，返回一个包含商和余数的元组(a // b, a % b)。
+  实例
+  >>>divmod(7, 2)
+  (3, 1)
+ 2、python __repr__ __str__的区别
+      类的订制
+      两者都是用来实现类的订制
+
+      __repr__ 在使用内建函数 repr()进自动调用
+
+    __str__ 在使用print()进自动调用
+
+    好的习惯把这两个定制方法进行重写,从而在输出显示时更方便
+  https://baijiahao.baidu.com/s?id=1596817611604972751&wfr=spider&for=pc
+
