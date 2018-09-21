@@ -68,3 +68,6 @@ boy:good:doiido:hello
 >>> import os
 >>> os.path.join('/hello/','good/boy/','doiido')
 '/hello/good/boy/doiido'
+9、格式化输出
+  print('index=%d,step=%d' %(index,step))
+  print('index={},step={}'.format(index,step))
