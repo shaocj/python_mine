@@ -71,3 +71,9 @@ boy:good:doiido:hello
 9、格式化输出
   print('index=%d,step=%d' %(index,step))
   print('index={},step={}'.format(index,step))
+有些时候，字符串里面的%是一个普通字符怎么办？这个时候就需要转义，用%%来表示一个%：
+>>> 'growth rate: %d %%' % 7
+'growth rate: 7 %'
+另一种格式化字符串的方法是使用字符串的format()方法，它会用传入的参数依次替换字符串内的占位符{0}、{1}……
+>>> 'Hello, {0}, 成绩提升了 {1:.1f}%'.format('小明', 17.125)
+'Hello, 小明, 成绩提升了 17.1%'
