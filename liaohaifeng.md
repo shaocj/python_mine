@@ -1815,3 +1815,6 @@ boy:good:doiido:hello
 另一种格式化字符串的方法是使用字符串的format()方法，它会用传入的参数依次替换字符串内的占位符{0}、{1}……
 >>> 'Hello, {0}, 成绩提升了 {1:.1f}%'.format('小明', 17.125)
 'Hello, 小明, 成绩提升了 17.1%'
+
+
+关于python中enumerate和zip函数的用法及举例:https://blog.csdn.net/it_dream_er/article/details/50791436
