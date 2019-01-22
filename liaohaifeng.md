@@ -1818,3 +1818,7 @@ boy:good:doiido:hello
 
 
 关于python中enumerate和zip函数的用法及举例:https://blog.csdn.net/it_dream_er/article/details/50791436
+
+1\Python的attrgetter()
+https://blog.csdn.net/qq_24861509/article/details/47690819
+
