@@ -1824,3 +1824,7 @@ boy:good:doiido:hello
 1\Python的attrgetter()
 https://blog.csdn.net/qq_24861509/article/details/47690819
 
+2、逻辑运算符：
+    1.and的优先级要大于or 
+    2.a and b语句的输出全看a的Boolean值，如果a为True，输出b；反之，如果a为False，输出a 
+    3.a or b语句的输出也全看a的Boolean值，如果a为True，输出a；反之，如果a为False，输出b
