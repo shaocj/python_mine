@@ -1828,3 +1828,5 @@ https://blog.csdn.net/qq_24861509/article/details/47690819
     1.and的优先级要大于or 
     2.a and b语句的输出全看a的Boolean值，如果a为True，输出b；反之，如果a为False，输出a 
     3.a or b语句的输出也全看a的Boolean值，如果a为True，输出a；反之，如果a为False，输出b
+3、字符串find函数
+str.find(str2,1):从下标1开始str2在str中第一次出现的位置
