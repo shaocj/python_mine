@@ -1830,3 +1830,6 @@ https://blog.csdn.net/qq_24861509/article/details/47690819
     3.a or b语句的输出也全看a的Boolean值，如果a为True，输出a；反之，如果a为False，输出b
 3、字符串find函数
 str.find(str2,1):从下标1开始str2在str中第一次出现的位置
+4、排序模块bisect
+https://www.cnblogs.com/skydesign/archive/2011/09/02/2163592.html
+
