@@ -54,6 +54,9 @@ ax = plt.subplot2grid((2,2),(0, 0))
 import matplotlib.gridspec as gridspec
 gs = gridspec.GridSpec(2, 2)
 ax = plt.subplot(gs[0, 0])     
+等价于：
+fig = plt.figure()
+ax1 = fig.add_subplot(221)
 
 柱形图：
 #bar(left, height, width, color, align, yerr)函数：绘制柱形图。left为x轴的位置序列，一般采用arange函数产生一个序列；height为y轴的数值序列，也就是
